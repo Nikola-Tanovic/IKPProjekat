@@ -17,6 +17,8 @@ DWORD WINAPI recieve(LPVOID lpParam) {
     if (iResult != NO_ERROR)
         printf("ioctlsocket failed with error: %ld\n", iResult);
 
+
+
     fd_set readfds;
 
     FD_ZERO(&readfds);
