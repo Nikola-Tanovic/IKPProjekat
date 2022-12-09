@@ -14,7 +14,7 @@
 // Returns true if succeeded, false otherwise.
 bool InitializeWindowsSockets();
 
-int __cdecl main(int argc, char **argv) 
+int __cdecl main(int argc, char** argv)
 {
     // socket used to communicate with server
     SOCKET connectSocket = INVALID_SOCKET;
@@ -24,21 +24,21 @@ int __cdecl main(int argc, char **argv)
     int result = 0;
 
     // message to send
-    char *messageToSend = "this is a test";
-    
- 
+    char messageToSend[100];
 
-    if(InitializeWindowsSockets() == false)
+
+
+    if (InitializeWindowsSockets() == false)
     {
-		// we won't log anything since it will be logged
-		// by InitializeWindowsSockets() function
-		return 1;
+        // we won't log anything since it will be logged
+        // by InitializeWindowsSockets() function
+        return 1;
     }
 
     // create a socket
     connectSocket = socket(AF_INET,
-                           SOCK_STREAM,
-                           IPPROTO_TCP);
+        SOCK_STREAM,
+        IPPROTO_TCP);
 
     if (connectSocket == INVALID_SOCKET)
     {
@@ -66,7 +66,7 @@ int __cdecl main(int argc, char **argv)
     if (iResult != NO_ERROR)
         printf("ioctlsocket failed with error: %ld\n", iResult);
 
-   
+
     fd_set writefds;
 
     timeval timeVal;
@@ -93,8 +93,8 @@ int __cdecl main(int argc, char **argv)
             break;
         }
 
-
-
+        printf("Unesite poruku: ");
+        scanf("%s", messageToSend);
 
         // Send an prepared message with null terminator included
         iResult = send(connectSocket, messageToSend, (int)strlen(messageToSend) + 1, 0);
@@ -108,7 +108,7 @@ int __cdecl main(int argc, char **argv)
         }
 
         printf("Bytes Sent: %ld\n", iResult);
-        
+
         FD_CLR(connectSocket, &writefds);
 
     }
@@ -122,11 +122,11 @@ int __cdecl main(int argc, char **argv)
 bool InitializeWindowsSockets()
 {
     WSADATA wsaData;
-	// Initialize windows sockets library for this process
-    if (WSAStartup(MAKEWORD(2,2), &wsaData) != 0)
+    // Initialize windows sockets library for this process
+    if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0)
     {
         printf("WSAStartup failed with error: %d\n", WSAGetLastError());
         return false;
     }
-	return true;
+    return true;
 }
