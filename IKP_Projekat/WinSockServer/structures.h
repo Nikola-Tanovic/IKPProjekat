@@ -1,5 +1,8 @@
 #pragma once
 #include "ws2def.h";
+#include "stdio.h";
+#include "stdlib.h";
+
 typedef struct hashValue {
 	char** completeFile;
 	filePartData* filePartDataList;

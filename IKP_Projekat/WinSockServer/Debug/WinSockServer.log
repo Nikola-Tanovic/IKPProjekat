@@ -1,1 +1,278 @@
-﻿
+﻿  hashMap.cpp
+D:\7. semestar\IKP\Projekat\IKPProjekat\IKP_Projekat\WinSockServer\hashMap.cpp(1,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+D:\7. semestar\IKP\Projekat\IKPProjekat\IKP_Projekat\WinSockServer\hmElementList.cpp(1,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+D:\7. semestar\IKP\Projekat\IKPProjekat\IKP_Projekat\WinSockServer\structures.h(2,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\inaddr.h(27,32): error C3646: 's_b1': unknown override specifier
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\inaddr.h(27,36): error C2059: syntax error: ','
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\inaddr.h(27,51): error C2238: unexpected token(s) preceding ';'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\inaddr.h(28,33): error C3646: 's_w1': unknown override specifier
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\inaddr.h(28,37): error C2059: syntax error: ','
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\inaddr.h(28,42): error C2238: unexpected token(s) preceding ';'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\inaddr.h(29,23): error C3646: 'S_addr': unknown override specifier
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\inaddr.h(29,29): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\inaddr.h(37,27): error C2143: syntax error: missing ';' before '*'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\inaddr.h(37,37): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(81,30): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(81,16): error C2146: syntax error: missing ';' before identifier 'ADDRESS_FAMILY'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(243,13): error C3646: 'sa_family': unknown override specifier
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(243,22): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(248,10): error C3646: 'sa_data': unknown override specifier
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(248,17): error C2143: syntax error: missing ',' before '['
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(248,21): error C2238: unexpected token(s) preceding ';'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(249,29): error C2143: syntax error: missing ';' before '*'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(249,25): error C2371: 'FAR': redefinition; different basic types
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\inaddr.h(37): message : see declaration of 'FAR'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(249,40): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(259,24): error C2061: syntax error: identifier 'iSockaddrLength'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(259,41): error C3646: 'LPSOCKADDR': unknown override specifier
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(259,52): error C3646: 'lpSockaddr': unknown override specifier
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(259,62): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(259,62): warning C4183: '_Field_size_bytes_': missing return type; assumed to be a member function returning 'int'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(268,9): error C3646: 'iSockaddrLength': unknown override specifier
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(268,24): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(277,21): error C3646: 'iAddressCount': unknown override specifier
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(277,34): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(279,51): error C2143: syntax error: missing ';' before '*'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(279,47): error C2371: 'FAR': redefinition; different basic types
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\inaddr.h(37): message : see declaration of 'FAR'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(279,73): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(295,9): error C3646: 'iSocketType': unknown override specifier
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(295,21): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(296,9): error C3646: 'iProtocol': unknown override specifier
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(296,19): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(297,35): error C2143: syntax error: missing ';' before '*'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(297,31): error C2371: 'FAR': redefinition; different basic types
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\inaddr.h(37): message : see declaration of 'FAR'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(297,51): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(325,20): error C3646: 'ss_family': unknown override specifier
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(325,29): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(327,10): error C3646: '__ss_pad1': unknown override specifier
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(327,19): error C2143: syntax error: missing ',' before '['
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(327,33): error C2238: unexpected token(s) preceding ';'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(332,10): error C3646: '__ss_pad2': unknown override specifier
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(332,19): error C2143: syntax error: missing ',' before '['
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(332,33): error C2238: unexpected token(s) preceding ';'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(336,51): error C2143: syntax error: missing ';' before '*'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(336,47): error C2371: 'FAR': redefinition; different basic types
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\inaddr.h(37): message : see declaration of 'FAR'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(336,73): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(343,10): error C3646: '__ss_pad1': unknown override specifier
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(343,19): error C2143: syntax error: missing ',' before '['
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(343,33): error C2238: unexpected token(s) preceding ';'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(348,10): error C3646: '__ss_pad2': unknown override specifier
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(348,19): error C2143: syntax error: missing ',' before '['
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(348,33): error C2238: unexpected token(s) preceding ';'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(352,51): error C2143: syntax error: missing ';' before '*'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(352,47): error C2371: 'FAR': redefinition; different basic types
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\inaddr.h(37): message : see declaration of 'FAR'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(352,73): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(625,19): error C3646: 'Zone': unknown override specifier
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(625,24): error C2059: syntax error: ':'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(625,24): error C2334: unexpected token(s) preceding ':'; skipping apparent function body
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(628,15): error C3646: 'Value': unknown override specifier
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(628,20): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(648,10): error C3646: 'sin_zero': unknown override specifier
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(648,18): error C2143: syntax error: missing ',' before '['
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(648,21): error C2238: unexpected token(s) preceding ';'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(690,11): error C3646: 'len': unknown override specifier
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(690,14): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(691,24): error C2061: syntax error: identifier 'len'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(691,29): error C3646: 'CHAR': unknown override specifier
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(691,34): error C3646: 'FAR': unknown override specifier
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(691,38): error C2143: syntax error: missing ';' before '*'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(691,38): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(691,38): warning C4183: '_Field_size_bytes_': missing return type; assumed to be a member function returning 'int'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(691,38): error C2059: syntax error: '*'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(691,42): error C2238: unexpected token(s) preceding ';'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(692,15): error C2143: syntax error: missing ';' before '*'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(692,25): error C2238: unexpected token(s) preceding ';'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(699,24): error C2061: syntax error: identifier 'namelen'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(699,33): error C3646: 'LPSOCKADDR': unknown override specifier
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(699,50): error C3646: 'name': unknown override specifier
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(699,54): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(699,54): warning C4183: '_Field_size_bytes_': missing return type; assumed to be a member function returning 'int'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(700,22): error C3646: 'namelen': unknown override specifier
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(700,29): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(701,22): error C3646: 'lpBuffers': unknown override specifier
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(701,31): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(706,22): error C3646: 'dwBufferCount': unknown override specifier
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(706,35): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(714,22): error C3646: 'dwFlags': unknown override specifier
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(714,29): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(717,27): error C3646: 'LPWSAMSG': unknown override specifier
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(717,23): error C2040: '<unnamed-tag>::FAR': '<unnamed-tag>::_WSAMSG *' differs in levels of indirection from '<unnamed-tag>::_WSABUF'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(727,17): error C3646: 'cmsg_len': unknown override specifier
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(727,25): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(728,17): error C3646: 'cmsg_level': unknown override specifier
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(728,27): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(729,17): error C3646: 'cmsg_type': unknown override specifier
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(729,26): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(731,33): error C2143: syntax error: missing ';' before '*'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(731,29): error C2371: '<unnamed-tag>::FAR': redefinition; different basic types
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(692): message : see declaration of '<unnamed-tag>::FAR'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(731,46): error C2238: unexpected token(s) preceding ';'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(912,24): error C2061: syntax error: identifier 'ai_addrlen'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(912,43): error C2144: syntax error: 'sockaddr' should be preceded by ';'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(912,52): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(912,52): warning C4183: '_Field_size_bytes_': missing return type; assumed to be a member function returning 'int'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(924,25): error C3646: 'ai_canonname': unknown override specifier
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(924,37): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(925,24): error C2061: syntax error: identifier 'ai_addrlen'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(925,43): error C2144: syntax error: 'sockaddr' should be preceded by ';'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(925,52): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(925,52): warning C4183: '_Field_size_bytes_': missing return type; assumed to be a member function returning 'int'
+D:\7. semestar\IKP\Projekat\IKPProjekat\IKP_Projekat\WinSockServer\structures.h(3,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.28.29910\include\sal.h(2361,1): error C2159: more than one storage class specified
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.28.29910\include\sal.h(2361,8): error C2059: syntax error: 'string'
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.28.29910\include\sal.h(2361,12): error C2143: syntax error: missing ';' before '{'
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.28.29910\include\sal.h(2361,12): error C2447: '{': missing function header (old-style formal list?)
+D:\7. semestar\IKP\Projekat\IKPProjekat\IKP_Projekat\WinSockServer\structures.h(4,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+D:\7. semestar\IKP\Projekat\IKPProjekat\IKP_Projekat\WinSockServer\structures.h(8,14): error C2143: syntax error: missing ';' before '*'
+D:\7. semestar\IKP\Projekat\IKPProjekat\IKP_Projekat\WinSockServer\structures.h(8,14): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+D:\7. semestar\IKP\Projekat\IKPProjekat\IKP_Projekat\WinSockServer\structures.h(8,32): error C2238: unexpected token(s) preceding ';'
+D:\7. semestar\IKP\Projekat\IKPProjekat\IKP_Projekat\WinSockServer\structures.h(13,14): error C3646: 'ipClientSocket': unknown override specifier
+D:\7. semestar\IKP\Projekat\IKPProjekat\IKP_Projekat\WinSockServer\structures.h(13,28): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+D:\7. semestar\IKP\Projekat\IKPProjekat\IKP_Projekat\WinSockServer\hmElementList.cpp(2,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+D:\7. semestar\IKP\Projekat\IKPProjekat\IKP_Projekat\WinSockServer\hashMap.cpp(2,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+D:\7. semestar\IKP\Projekat\IKPProjekat\IKP_Projekat\WinSockServer\hashMap.cpp(36,27): error C3861: 'createCollisionList': identifier not found
+D:\7. semestar\IKP\Projekat\IKPProjekat\IKP_Projekat\WinSockServer\hashMap.cpp(56,5): error C3861: 'freeCollisionList': identifier not found
+D:\7. semestar\IKP\Projekat\IKPProjekat\IKP_Projekat\WinSockServer\hashMap.cpp(158,1): fatal error C1004: unexpected end-of-file found
+  hmElementList.cpp
+D:\7. semestar\IKP\Projekat\IKPProjekat\IKP_Projekat\WinSockServer\hmElementList.cpp(1,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+D:\7. semestar\IKP\Projekat\IKPProjekat\IKP_Projekat\WinSockServer\structures.h(2,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\inaddr.h(27,32): error C3646: 's_b1': unknown override specifier
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\inaddr.h(27,36): error C2059: syntax error: ','
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\inaddr.h(27,51): error C2238: unexpected token(s) preceding ';'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\inaddr.h(28,33): error C3646: 's_w1': unknown override specifier
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\inaddr.h(28,37): error C2059: syntax error: ','
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\inaddr.h(28,42): error C2238: unexpected token(s) preceding ';'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\inaddr.h(29,23): error C3646: 'S_addr': unknown override specifier
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\inaddr.h(29,29): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\inaddr.h(37,27): error C2143: syntax error: missing ';' before '*'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\inaddr.h(37,37): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(81,30): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(81,16): error C2146: syntax error: missing ';' before identifier 'ADDRESS_FAMILY'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(243,13): error C3646: 'sa_family': unknown override specifier
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(243,22): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(248,10): error C3646: 'sa_data': unknown override specifier
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(248,17): error C2143: syntax error: missing ',' before '['
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(248,21): error C2238: unexpected token(s) preceding ';'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(249,29): error C2143: syntax error: missing ';' before '*'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(249,25): error C2371: 'FAR': redefinition; different basic types
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\inaddr.h(37): message : see declaration of 'FAR'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(249,40): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(259,24): error C2061: syntax error: identifier 'iSockaddrLength'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(259,41): error C3646: 'LPSOCKADDR': unknown override specifier
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(259,52): error C3646: 'lpSockaddr': unknown override specifier
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(259,62): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(259,62): warning C4183: '_Field_size_bytes_': missing return type; assumed to be a member function returning 'int'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(268,9): error C3646: 'iSockaddrLength': unknown override specifier
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(268,24): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(277,21): error C3646: 'iAddressCount': unknown override specifier
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(277,34): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(279,51): error C2143: syntax error: missing ';' before '*'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(279,47): error C2371: 'FAR': redefinition; different basic types
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\inaddr.h(37): message : see declaration of 'FAR'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(279,73): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(295,9): error C3646: 'iSocketType': unknown override specifier
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(295,21): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(296,9): error C3646: 'iProtocol': unknown override specifier
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(296,19): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(297,35): error C2143: syntax error: missing ';' before '*'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(297,31): error C2371: 'FAR': redefinition; different basic types
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\inaddr.h(37): message : see declaration of 'FAR'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(297,51): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(325,20): error C3646: 'ss_family': unknown override specifier
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(325,29): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(327,10): error C3646: '__ss_pad1': unknown override specifier
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(327,19): error C2143: syntax error: missing ',' before '['
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(327,33): error C2238: unexpected token(s) preceding ';'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(332,10): error C3646: '__ss_pad2': unknown override specifier
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(332,19): error C2143: syntax error: missing ',' before '['
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(332,33): error C2238: unexpected token(s) preceding ';'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(336,51): error C2143: syntax error: missing ';' before '*'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(336,47): error C2371: 'FAR': redefinition; different basic types
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\inaddr.h(37): message : see declaration of 'FAR'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(336,73): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(343,10): error C3646: '__ss_pad1': unknown override specifier
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(343,19): error C2143: syntax error: missing ',' before '['
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(343,33): error C2238: unexpected token(s) preceding ';'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(348,10): error C3646: '__ss_pad2': unknown override specifier
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(348,19): error C2143: syntax error: missing ',' before '['
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(348,33): error C2238: unexpected token(s) preceding ';'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(352,51): error C2143: syntax error: missing ';' before '*'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(352,47): error C2371: 'FAR': redefinition; different basic types
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\inaddr.h(37): message : see declaration of 'FAR'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(352,73): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(625,19): error C3646: 'Zone': unknown override specifier
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(625,24): error C2059: syntax error: ':'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(625,24): error C2334: unexpected token(s) preceding ':'; skipping apparent function body
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(628,15): error C3646: 'Value': unknown override specifier
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(628,20): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(648,10): error C3646: 'sin_zero': unknown override specifier
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(648,18): error C2143: syntax error: missing ',' before '['
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(648,21): error C2238: unexpected token(s) preceding ';'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(690,11): error C3646: 'len': unknown override specifier
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(690,14): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(691,24): error C2061: syntax error: identifier 'len'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(691,29): error C3646: 'CHAR': unknown override specifier
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(691,34): error C3646: 'FAR': unknown override specifier
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(691,38): error C2143: syntax error: missing ';' before '*'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(691,38): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(691,38): warning C4183: '_Field_size_bytes_': missing return type; assumed to be a member function returning 'int'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(691,38): error C2059: syntax error: '*'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(691,42): error C2238: unexpected token(s) preceding ';'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(692,15): error C2143: syntax error: missing ';' before '*'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(692,25): error C2238: unexpected token(s) preceding ';'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(699,24): error C2061: syntax error: identifier 'namelen'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(699,33): error C3646: 'LPSOCKADDR': unknown override specifier
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(699,50): error C3646: 'name': unknown override specifier
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(699,54): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(699,54): warning C4183: '_Field_size_bytes_': missing return type; assumed to be a member function returning 'int'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(700,22): error C3646: 'namelen': unknown override specifier
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(700,29): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(701,22): error C3646: 'lpBuffers': unknown override specifier
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(701,31): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(706,22): error C3646: 'dwBufferCount': unknown override specifier
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(706,35): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(714,22): error C3646: 'dwFlags': unknown override specifier
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(714,29): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(717,27): error C3646: 'LPWSAMSG': unknown override specifier
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(717,23): error C2040: '<unnamed-tag>::FAR': '<unnamed-tag>::_WSAMSG *' differs in levels of indirection from '<unnamed-tag>::_WSABUF'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(727,17): error C3646: 'cmsg_len': unknown override specifier
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(727,25): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(728,17): error C3646: 'cmsg_level': unknown override specifier
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(728,27): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(729,17): error C3646: 'cmsg_type': unknown override specifier
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(729,26): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(731,33): error C2143: syntax error: missing ';' before '*'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(731,29): error C2371: '<unnamed-tag>::FAR': redefinition; different basic types
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(692): message : see declaration of '<unnamed-tag>::FAR'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(731,46): error C2238: unexpected token(s) preceding ';'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(912,24): error C2061: syntax error: identifier 'ai_addrlen'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(912,43): error C2144: syntax error: 'sockaddr' should be preceded by ';'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(912,52): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(912,52): warning C4183: '_Field_size_bytes_': missing return type; assumed to be a member function returning 'int'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(924,25): error C3646: 'ai_canonname': unknown override specifier
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(924,37): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(925,24): error C2061: syntax error: identifier 'ai_addrlen'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(925,43): error C2144: syntax error: 'sockaddr' should be preceded by ';'
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(925,52): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\ws2def.h(925,52): warning C4183: '_Field_size_bytes_': missing return type; assumed to be a member function returning 'int'
+D:\7. semestar\IKP\Projekat\IKPProjekat\IKP_Projekat\WinSockServer\structures.h(3,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.28.29910\include\sal.h(2361,1): error C2159: more than one storage class specified
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.28.29910\include\sal.h(2361,8): error C2059: syntax error: 'string'
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.28.29910\include\sal.h(2361,12): error C2143: syntax error: missing ';' before '{'
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.28.29910\include\sal.h(2361,12): error C2447: '{': missing function header (old-style formal list?)
+D:\7. semestar\IKP\Projekat\IKPProjekat\IKP_Projekat\WinSockServer\structures.h(4,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+D:\7. semestar\IKP\Projekat\IKPProjekat\IKP_Projekat\WinSockServer\structures.h(8,14): error C2143: syntax error: missing ';' before '*'
+D:\7. semestar\IKP\Projekat\IKPProjekat\IKP_Projekat\WinSockServer\structures.h(8,14): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+D:\7. semestar\IKP\Projekat\IKPProjekat\IKP_Projekat\WinSockServer\structures.h(8,32): error C2238: unexpected token(s) preceding ';'
+D:\7. semestar\IKP\Projekat\IKPProjekat\IKP_Projekat\WinSockServer\structures.h(13,14): error C3646: 'ipClientSocket': unknown override specifier
+D:\7. semestar\IKP\Projekat\IKPProjekat\IKP_Projekat\WinSockServer\structures.h(13,28): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+D:\7. semestar\IKP\Projekat\IKPProjekat\IKP_Projekat\WinSockServer\hmElementList.cpp(2,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+D:\7. semestar\IKP\Projekat\IKPProjekat\IKP_Projekat\WinSockServer\hmElementList.cpp(84,1): fatal error C1004: unexpected end-of-file found
+  threadList.cpp
+D:\7. semestar\IKP\Projekat\IKPProjekat\IKP_Projekat\WinSockServer\threadList.cpp(1,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+D:\7. semestar\IKP\Projekat\IKPProjekat\IKP_Projekat\WinSockServer\threadList.cpp(102,8): warning C4101: 'prev': unreferenced local variable
+  Generating Code...
