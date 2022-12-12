@@ -1,7 +1,7 @@
 #include "threadList.h";
 
-void printList(node* head) {
-	node* temp = head;
+void printList(threadNode* head) {
+	threadNode* temp = head;
 	while (temp != NULL) {
 		printf("%d - ", temp->threadId);
 		temp = temp->next;
@@ -9,16 +9,16 @@ void printList(node* head) {
 	printf("\n");
 }
 
-node* createNewNode(HANDLE thread, DWORD threadId) {
-	node* newNode = (node*)malloc(sizeof(node));
-	newNode->thread = thread;
-	newNode->threadId = threadId;
-	newNode->next = NULL;
-	return newNode;
+threadNode* createNewThreadNode(HANDLE thread, DWORD threadId) {
+	threadNode* newthreadNode = (threadNode*)malloc(sizeof(threadNode));
+	newthreadNode->thread = thread;
+	newthreadNode->threadId = threadId;
+	newthreadNode->next = NULL;
+	return newthreadNode;
 }
 
-node* deleteFirstNode(node* head) {
-	node* temp = head;
+threadNode* deleteFirstthreadNode(threadNode* head) {
+	threadNode* temp = head;
 
 	//kada se ovo uradi, prvi element liste ce biti smesten u temp, jer je sad head ustvari head->next 
 	head = head->next;
@@ -30,31 +30,31 @@ node* deleteFirstNode(node* head) {
 	return head;
 }
 
-void deleteFirstNodeBYReference(node** head) {
+void deleteFirstthreadNodeBYReference(threadNode** head) {
 	(*head) = (*head)->next;
 }
 
-node* insertAtHead(node** head, node* nodeToInsert) {
+threadNode* insertAtHead(threadNode** head, threadNode* threadNodeToInsert) {
 	//kazemo da pokazivac u elementu koji zelimo da ubacimo treba na head da pokazuje
 	//na taj nacin se desava da elementi liste budu: 
-	//        nodeToInsert -> head -> elem1 -> elem2 -> ... -> NULL
-	nodeToInsert->next = *head;
+	//        threadNodeToInsert -> head -> elem1 -> elem2 -> ... -> NULL
+	threadNodeToInsert->next = *head;
 
 	//potom, head stavimo da bude taj element koji smo ubacili
-	//pa se onda head postavi na node to insert
-	// head(nodeToInsert) -> head(malo pre ovde bio) -> elem1 -> elem2 -> ... -> NULL
-	*head = nodeToInsert;
+	//pa se onda head postavi na threadNode to insert
+	// head(threadNodeToInsert) -> head(malo pre ovde bio) -> elem1 -> elem2 -> ... -> NULL
+	*head = threadNodeToInsert;
 
-	return nodeToInsert;
+	return threadNodeToInsert;
 }
 
 
-node* insertAtEnd(node** head, node* nodeToInsert) {
-	node* temp = *head;
+threadNode* insertAtEnd(threadNode** head, threadNode* threadNodeToInsert) {
+	threadNode* temp = *head;
 
 	if (*head == NULL) {
-		*head = nodeToInsert;
-		return nodeToInsert;
+		*head = threadNodeToInsert;
+		return threadNodeToInsert;
 	}
 
 	//na ovaj nacin dolazimo do poslednjeg cvora
@@ -64,13 +64,13 @@ node* insertAtEnd(node** head, node* nodeToInsert) {
 	}
 
 	//sad je temp poslednji cvor
-	temp->next = nodeToInsert;
+	temp->next = threadNodeToInsert;
 
-	return nodeToInsert;
+	return threadNodeToInsert;
 }
 
-node* findNodeByThreadId(node* head, DWORD threadId) {
-	node* temp = head;
+threadNode* findthreadNodeByThreadId(threadNode* head, DWORD threadId) {
+	threadNode* temp = head;
 
 	//provera da li je head == NULL tj. da li ima elemenata u listi
 	if (temp == NULL) {
@@ -86,40 +86,40 @@ node* findNodeByThreadId(node* head, DWORD threadId) {
 	return temp;
 }
 
-void printFoundNode(node* head, DWORD threadId) {
-	node* findNode = findNodeByThreadId(head, threadId);
-	if (findNode == NULL) {
+void printFoundthreadNode(threadNode* head, DWORD threadId) {
+	threadNode* findthreadNode = findthreadNodeByThreadId(head, threadId);
+	if (findthreadNode == NULL) {
 		printf("Element nije pronadjen\n");
 	}
 	else {
-		printf("Node found! \nNode adress: %p\n Thread ID: %d\n", findNode, findNode->threadId);
+		printf("threadNode found! \nthreadNode adress: %p\n Thread ID: %d\n", findthreadNode, findthreadNode->threadId);
 	}
 }
 
 
-void deleteLastNode(node* head) {
-	node* temp = head;
-	node* prev;
-	//trazimo node koji je pretposlednji
+void deleteLastthreadNode(threadNode* head) {
+	threadNode* temp = head;
+	threadNode* prev;
+	//trazimo threadNode koji je pretposlednji
 	while (temp->next->next != NULL) {
 		temp = temp->next;
 	}
 
-	//posle ovog loop-a, u tempu nam se nalazi pretposlednji node, sto znaci da je temp->next poslednji
-	//i mi taj poslednji nod stavimo u neku promenjivu, temp->next postavimo na NULL, pa on sad postaje zadnji node
-	node* nodeToDelete = temp->next;
+	//posle ovog loop-a, u tempu nam se nalazi pretposlednji threadNode, sto znaci da je temp->next poslednji
+	//i mi taj poslednji nod stavimo u neku promenjivu, temp->next postavimo na NULL, pa on sad postaje zadnji threadNode
+	threadNode* threadNodeToDelete = temp->next;
 	temp->next = NULL;
 
-	//node koji smo obrisali moramo da mu oslobodimo memoriju
-	free(nodeToDelete);
+	//threadNode koji smo obrisali moramo da mu oslobodimo memoriju
+	free(threadNodeToDelete);
 }
 
-void deleteNode(struct node** head, DWORD threadId)
+void deletethreadNode(struct threadNode** head, DWORD threadId)
 {
-	// Store head node
-	struct node* temp = *head, * prev = NULL;
+	// Store head threadNode
+	struct threadNode* temp = *head, * prev = NULL;
 
-	// If head node itself holds the key to be deleted
+	// If head threadNode itself holds the key to be deleted
 	if (temp != NULL && temp->threadId == threadId) {
 		*head = temp->next; // Changed head
 		free(temp); // free old head
@@ -127,7 +127,7 @@ void deleteNode(struct node** head, DWORD threadId)
 	}
 
 	// Search for the key to be deleted, keep track of the
-	// previous node as we need to change 'prev->next'
+	// previous threadNode as we need to change 'prev->next'
 	while (temp != NULL && temp->threadId != threadId) {
 		prev = temp;
 		temp = temp->next;
@@ -137,7 +137,7 @@ void deleteNode(struct node** head, DWORD threadId)
 	if (temp == NULL)
 		return;
 
-	// Unlink the node from linked list
+	// Unlink the threadNode from linked list
 	prev->next = temp->next;
 
 	free(temp); // Free memory

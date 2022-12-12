@@ -1,12 +1,7 @@
-#pragma once
-#include "ws2def.h";
+
+#include "ws2tcpip.h"
 #include "stdio.h";
 #include "stdlib.h";
-
-typedef struct hashValue {
-	char** completeFile;
-	filePartData* filePartDataList;
-}hashValue;
 
 typedef struct filePartData {
 	int idFile;
@@ -15,5 +10,10 @@ typedef struct filePartData {
 	int filePartSize;
 	//filePartData* nextPart;
 }filePartData;
+
+typedef struct hashValue {
+	char** completeFile;
+	filePartData* filePartDataList;
+}hashValue;
 
 

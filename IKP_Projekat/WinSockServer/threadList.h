@@ -1,33 +1,32 @@
-#pragma once
 #include <ws2tcpip.h>
 #include <stdlib.h>
 #include <stdio.h>
 
-typedef struct node {
+typedef struct threadNode {
 	HANDLE thread;
 	DWORD threadId;
-	struct node* next;
-}node;
+	struct threadNode* next;
+}threadNode;
 
-void printList(node* head);
+void printList(threadNode* head);
 
-node* createNewNode(HANDLE thread, DWORD threadId);
+threadNode* createNewThreadNode(HANDLE thread, DWORD threadId);
 
 //brisanje prvog elementa liste
 //prosledi se head, 
-node* deleteFirstNode(node* head);
+threadNode* deleteFirstthreadNode(threadNode* head);
 
 //ovo je brisanje preko reference
-void deleteFirstNodeBYReference(node** head);
+void deleteFirstthreadNodeBYReference(threadNode** head);
 
-node* insertAtHead(node** head, node* nodeToInsert);
+threadNode* insertAtHead(threadNode** head, threadNode* threadNodeToInsert);
 
-node* insertAtEnd(node** head, node* nodeToInsert);
+threadNode* insertAtEnd(threadNode** head, threadNode* threadNodeToInsert);
 
-node* findNodeByThreadId(node* head, DWORD threadId);
+threadNode* findthreadNodeByThreadId(threadNode* head, DWORD threadId);
 
-void printFoundNode(node* head, DWORD threadId);
+void printFoundthreadNode(threadNode* head, DWORD threadId);
 
-void deleteLastNode(node* head);
+void deleteLastthreadNode(threadNode* head);
 
-void deleteNode(struct node** head, DWORD threadId);
+void deletethreadNode(struct threadNode** head, DWORD threadId);

@@ -1,5 +1,5 @@
-#include "hmElementList.cpp";
-#include "string.h";
+#pragma once;
+#include "hmElementList.h";
 
 #define CAPACITY 50000 //size of hash map
 
@@ -25,37 +25,11 @@ hmItem* createItem(int key, hashValue* value) {
     return item;
 }
 
-hashMap* createMap(int size) {
-    // Creates a new HashTable
-    hashMap* map = (hashMap*)malloc(sizeof(hashMap));
-    map->size = size;
-    map->count = 0;
-    map->items = (hmItem**)calloc(map->size, sizeof(hmItem*));
-    for (int i = 0; i < map->size; i++)
-        map->items[i] = NULL;
-    map->collisionLists = createCollisionList(map);
-
-    return map;
-}
-
 void freeItem(hmItem* item) {
     // Frees an item
     //free(item->key);
     free(item->value);
     free(item);
-}
-
-void freeMap(hashMap* map) {
-    // Frees the map
-    for (int i = 0; i < map->size; i++) {
-        hmItem* item = map->items[i];
-        if (item != NULL)
-            freeItem(item);
-    }
-   
-    freeCollisionList(map);
-    free(map->items);
-    free(map);
 }
 
 int hashFunction(int key)
@@ -154,4 +128,31 @@ void freeCollisionList(hashMap* hashMap) {
        freeCollisionHmElementsList(collisionItems[i]);
     free(collisionItems);
 }
+
+void freeMap(hashMap* map) {
+    // Frees the map
+    for (int i = 0; i < map->size; i++) {
+        hmItem* item = map->items[i];
+        if (item != NULL)
+            freeItem(item);
+    }
+
+    freeCollisionList(map);
+    free(map->items);
+    free(map);
+}
+
+hashMap* createMap(int size) {
+    // Creates a new HashTable
+    hashMap* map = (hashMap*)malloc(sizeof(hashMap));
+    map->size = size;
+    map->count = 0;
+    map->items = (hmItem**)calloc(map->size, sizeof(hmItem*));
+    for (int i = 0; i < map->size; i++)
+        map->items[i] = NULL;
+    map->collisionLists = createCollisionList(map);
+
+    return map;
+}
+
 
