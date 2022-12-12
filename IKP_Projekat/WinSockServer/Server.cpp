@@ -254,8 +254,10 @@ int  main(void)
             printf("Thread ID(unutar main funkcije servera): %d\n", tParameters.threadId);
             threadNode* tn = createNewThreadNode(thread, tParameters.threadId);
             insertAtHead(&head, tn);
+            printList(head);
             LeaveCriticalSection(&threadListCS);
 
+            
 
             /*
             // postavljanje soketa u neblokirajuci rezim
