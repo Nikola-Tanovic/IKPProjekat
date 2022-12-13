@@ -1,5 +1,5 @@
 ﻿  Server.cpp
 D:\7. semestar\IKP\Projekat\IKPProjekat\IKP_Projekat\WinSockServer\Server.cpp(5,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
-D:\7. semestar\IKP\Projekat\IKPProjekat\IKP_Projekat\WinSockServer\Server.cpp(68,56): warning C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
-D:\7. semestar\IKP\Projekat\IKPProjekat\IKP_Projekat\WinSockServer\Server.cpp(103,10): warning C4101: 'recvbuf': unreferenced local variable
+D:\7. semestar\IKP\Projekat\IKPProjekat\IKP_Projekat\WinSockServer\Server.cpp(48,10): warning C4101: 'recvbuf': unreferenced local variable
+D:\7. semestar\IKP\Projekat\IKPProjekat\IKP_Projekat\WinSockServer\Server.cpp(257,56): warning C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
   WinSockServer.vcxproj -> D:\7. semestar\IKP\Projekat\IKPProjekat\IKP_Projekat\Debug\WinSockServer.exe
