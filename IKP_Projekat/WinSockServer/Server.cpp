@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "threadList.h";
-
+#include "string.h";
 
 #define DEFAULT_BUFLEN 512
 #define DEFAULT_PORT "27016"
@@ -163,11 +163,29 @@ int  main(void)
     threadNode* tn = createNewThreadNode(listenThread, ltParams->threadId);
     insertAtHead(&head, tn);
     printList(head);
-    printf("Listen thread pokrenut, unesite 'exit' za kraj\n");
+    printf("Listen thread pokrenut, unesite 'E' za kraj\n");
     LeaveCriticalSection(&threadListCS);
 
-    int c = getchar();
+    char input = ' ';
+    scanf("%c", &input);
+    if (input == 'e') {
+        exitFlag = 1;
 
+       /*
+       proveravamo da li je lista threadova prazna, ako jeste znaci da su svi threadovi izvrseni i zatvoreni
+       zatvaranje threadova radimo u samim thread-ovima tako sto pretrazimo listu threadova po threadId koji imamo u parametrima 
+       i onda thread iz tog cvora liste koji smo nasli zatvorimo i nakon toga sam taj node obrisemo iz liste po tom id.
+       
+        */
+        while(head != NULL) {
+            Sleep(200); 
+        }
+        closesocket(listenSocket);
+        WSACleanup();
+        return 0;
+    }
+
+   
     //promenjiva koja detektuje exit na mainu se prosledjuje lisent thread-u a on prosledjuje thradoivma za komunikaciju sa klijentima
     //taj gethchar stoji u main threadu posle listen thread-a
     //
@@ -184,12 +202,11 @@ int  main(void)
 
     // cleanup*/
 
-    closesocket(listenSocket);
+    
     
     //closesocket(acceptedSocket);
 
-    WSACleanup();
-
+  
     //zatvaramo threadove
 
     return 0;
