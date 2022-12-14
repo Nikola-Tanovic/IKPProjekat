@@ -175,13 +175,13 @@ int  main(void)
        proveravamo da li je lista threadova prazna, ako jeste znaci da su svi threadovi izvrseni i zatvoreni
        zatvaranje threadova radimo u samim thread-ovima tako sto pretrazimo listu threadova po threadId koji imamo u parametrima 
        i onda thread iz tog cvora liste koji smo nasli zatvorimo i nakon toga sam taj node obrisemo iz liste po tom id.
-       
         */
         while(head != NULL) {
             Sleep(200); 
         }
         closesocket(listenSocket);
         WSACleanup();
+        free(head);
         return 0;
     }
 
@@ -283,15 +283,31 @@ DWORD WINAPI clientThreadFunction(LPVOID lpParam) {
             //da li je ovde klijent gracefully zatvorio i kada se ulazi u ovaj deo koda
             printf("Connection with client closed.\n");
             closesocket(tParameters->acceptedSocket);
+            break;
         }
         else
         {
             // there was an error during recv
             printf("recv failed with error: %d\n", WSAGetLastError());
             closesocket(tParameters->acceptedSocket);
+            break;
         }
-    } while (1);
+    } while (!*(tParameters->exitFlag));
+    
     //zatvaranje thread-a i close socket 
+    EnterCriticalSection(&(tParameters->threadListCS));
+    threadNode* nodeToDelete = findthreadNodeByThreadId(*(tParameters->head), tParameters->threadId);
+    LeaveCriticalSection(&(tParameters->threadListCS));
+
+    CloseHandle(nodeToDelete->thread);
+
+    EnterCriticalSection(&(tParameters->threadListCS));
+    deletethreadNode(tParameters->head, tParameters->threadId);
+    printf("Ispis u client communication thread-u\n");
+    printList(*(tParameters->head));
+    LeaveCriticalSection(&(tParameters->threadListCS));
+
+
     return 0;
     // here is where server shutdown loguc could be placed
 }
@@ -341,7 +357,7 @@ DWORD WINAPI listenThreadFunction(LPVOID lpParam) {
                 printf("accept failed with error: %d\n", WSAGetLastError());
                 closesocket(ltParams->listenSocket);
                 WSACleanup();
-                return 1;
+                break;
             }
 
             //u tread stavljamo sve ovo ispod ovog komentara, kada prodje accept treba da 
@@ -424,7 +440,21 @@ DWORD WINAPI listenThreadFunction(LPVOID lpParam) {
 
         //gde se vrsi logika zatvaranja soketa i brisanja threadova iz liste
 
-    } while (1);
+    } while (!*(ltParams->exitFlag));
+
+    //Zatvaranje Handla
+    EnterCriticalSection(&(ltParams->threadListCS));
+    threadNode* nodeToClose = findthreadNodeByThreadId(*(ltParams->head), ltParams->threadId);
+    LeaveCriticalSection(&(ltParams->threadListCS));
+
+    CloseHandle(nodeToClose->thread);
+    
+    //brisanje thread node iz liste
+    EnterCriticalSection(&(ltParams->threadListCS));
+    deletethreadNode(ltParams->head, ltParams->threadId);
+    printf("Ispis u listen thread-u\n");
+    printList(*(ltParams->head));
+    LeaveCriticalSection(&(ltParams->threadListCS));
 
     return 0;
 }
