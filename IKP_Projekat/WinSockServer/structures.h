@@ -12,6 +12,7 @@ typedef struct filePartData {
 }filePartData;
 
 typedef struct hashValue {
+	//nije string, nego pokazivac na string zbog memorije
 	char** completeFile;
 	filePartData* filePartDataList;
 }hashValue;

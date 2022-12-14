@@ -1,17 +1,5 @@
 #pragma once;
-#include "hmElementList.h";
-
-#define CAPACITY 50000 //size of hash map
-
-// Define the Hash map here
-typedef struct hashMap {
-    // Contains an array of pointers
-    // to items
-    hmItem** items;
-    colisionHmItem** collisionLists; //lista pokazivaca na collisionHmItem, tj, jedan chain gde imamo koliziju, a node ce biti fajl1 fajl5 fajl7
-    int size;
-    int count;
-}hashMap;
+#include "hashMap.h";
 
 hmItem* createItem(int key, hashValue* value) {
     // Creates a pointer to a new hash table item
@@ -71,6 +59,9 @@ void hmInsert(hashMap* map, int key, hashValue* value) {
         }
 
         // Insert directly
+
+        
+        //*(map->items + index) = item;
         map->items[index] = item;
         map->count++;
     }

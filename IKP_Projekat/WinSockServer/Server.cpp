@@ -4,9 +4,12 @@
 #include <stdio.h>
 #include "threadList.h";
 #include "string.h";
+#include "hashMap.h";
+
 
 #define DEFAULT_BUFLEN 512
 #define DEFAULT_PORT "27016"
+#define MAP_SIZE 10
 
 bool InitializeWindowsSockets();
 
@@ -37,6 +40,19 @@ DWORD WINAPI listenThreadFunction(LPVOID lpParam);
 
 int  main(void)
 {
+    char* fileArray[] = {
+    "Led led sladoled, sladja cura nego med",
+    "Skeledzijo na Moravi prijatelju stari, dal si skoro prevezao preko dvoje mladih",
+    "Svi kockari gube sve kasnije il pre",
+    "Zasto nisam pticica, da letim daleko, pa da vidim napolju, ceka li me neko",
+    "Ja necu lepsu, ja necu drugu, birao sam sreco moja ili tebe ili tugu",
+    "Ja sam ja, Jeremija, prezivam se Krstic",
+    "Iznenada u kafani staroj, sinoc sretoh prijatelja svoga",
+    "Ja sam seljak, veseljak, al u dusi tugu skrivam",
+    "Tamo gde si ti tamo stanuje mi dusa, ranjena dusa zeljna ljubavi",
+    "Hvala ti za ljubav sto od tebe primam, ja sam srecan covek, srecan sto te imam"
+    };
+
     // Socket used for listening for new clients 
     SOCKET listenSocket = INVALID_SOCKET;
     // Socket used for communication with client
@@ -65,6 +81,18 @@ int  main(void)
 
     //initializing list of threads
     threadNode* head = NULL;
+
+    hashMap* hashMap = createMap(MAP_SIZE);
+    for (int i = 0; i < MAP_SIZE; i++) {
+        hashValue* hashValueInsert = (hashValue*)malloc(sizeof(hashValue));
+        hashValueInsert->completeFile = &fileArray[i];
+        hashValueInsert->filePartDataList = NULL;
+        hmInsert(hashMap, i, hashValueInsert);
+    }
+
+    
+    hashValue* hv = hmSearch(hashMap, 3);
+
 
 
     if (InitializeWindowsSockets() == false)
