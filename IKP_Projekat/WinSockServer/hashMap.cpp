@@ -22,7 +22,7 @@ void freeItem(hmItem* item) {
 
 int hashFunction(int key)
 {
-	return (key % CAPACITY);
+	return (key % MAP_SIZE);
 }
 
 void handleCollision(hashMap* map, int index, hmItem* item) {
@@ -32,6 +32,7 @@ void handleCollision(hashMap* map, int index, hmItem* item) {
         // We need to create the list
         head = allocateCollisionHmItem();
         head->item = item;
+        head->next = NULL;
         map->collisionLists[index] = head;
         return;
     }

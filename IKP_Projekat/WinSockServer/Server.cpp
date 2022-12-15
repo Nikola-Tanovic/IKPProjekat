@@ -9,7 +9,7 @@
 
 #define DEFAULT_BUFLEN 512
 #define DEFAULT_PORT "27016"
-#define MAP_SIZE 10
+#define FILE_COUNT 10
 
 bool InitializeWindowsSockets();
 
@@ -83,7 +83,7 @@ int  main(void)
     threadNode* head = NULL;
 
     hashMap* hashMap = createMap(MAP_SIZE);
-    for (int i = 0; i < MAP_SIZE; i++) {
+    for (int i = 0; i < FILE_COUNT; i++) {
         hashValue* hashValueInsert = (hashValue*)malloc(sizeof(hashValue));
         hashValueInsert->completeFile = &fileArray[i];
         hashValueInsert->filePartDataList = NULL;
@@ -91,7 +91,7 @@ int  main(void)
     }
 
     
-    hashValue* hv = hmSearch(hashMap, 3);
+    hashValue* hv = hmSearch(hashMap, 9);
 
 
 

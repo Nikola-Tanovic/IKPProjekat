@@ -1,7 +1,7 @@
 #pragma once
 #include "hmElementList.h";
 
-#define CAPACITY 50000 //size of hash map
+#define MAP_SIZE 3  //size of hash map
 
 // Define the Hash map here
 typedef struct hashMap {
