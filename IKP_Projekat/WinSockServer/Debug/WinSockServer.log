@@ -6,8 +6,9 @@ D:\7. semestar\IKP\Projekat\IKPProjekat\IKP_Projekat\WinSockServer\hashMap.h(2,1
 D:\7. semestar\IKP\Projekat\IKPProjekat\IKP_Projekat\WinSockServer\hmElementList.h(2,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
 D:\7. semestar\IKP\Projekat\IKPProjekat\IKP_Projekat\WinSockServer\structures.h(3,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
 D:\7. semestar\IKP\Projekat\IKPProjekat\IKP_Projekat\WinSockServer\structures.h(4,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+D:\7. semestar\IKP\Projekat\IKPProjekat\IKP_Projekat\WinSockServer\structures.h(24,2): warning C4091: 'typedef ': ignored on left of 'request' when no variable is declared
 D:\7. semestar\IKP\Projekat\IKPProjekat\IKP_Projekat\WinSockServer\hmElementList.h(3,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
 D:\7. semestar\IKP\Projekat\IKPProjekat\IKP_Projekat\WinSockServer\Server.cpp(198,5): warning C4996: 'scanf': This function or variable may be unsafe. Consider using scanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
 D:\7. semestar\IKP\Projekat\IKPProjekat\IKP_Projekat\WinSockServer\Server.cpp(64,10): warning C4101: 'recvbuf': unreferenced local variable
-D:\7. semestar\IKP\Projekat\IKPProjekat\IKP_Projekat\WinSockServer\Server.cpp(302,56): warning C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+D:\7. semestar\IKP\Projekat\IKPProjekat\IKP_Projekat\WinSockServer\Server.cpp(310,56): warning C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
   WinSockServer.vcxproj -> D:\7. semestar\IKP\Projekat\IKPProjekat\IKP_Projekat\Debug\WinSockServer.exe

@@ -1,4 +1,6 @@
 ﻿  Client.cpp
-D:\7. semestar\IKP\Projekat\IKPProjekat\IKP_Projekat\WinSockClient\Client.cpp(53,37): warning C4996: 'inet_addr': Use inet_pton() or InetPton() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
-D:\7. semestar\IKP\Projekat\IKPProjekat\IKP_Projekat\WinSockClient\Client.cpp(97,9): warning C4996: 'scanf': This function or variable may be unsafe. Consider using scanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+D:\7. semestar\IKP\Projekat\IKPProjekat\IKP_Projekat\WinSockClient\Client.cpp(20,2): warning C4091: 'typedef ': ignored on left of 'request' when no variable is declared
+D:\7. semestar\IKP\Projekat\IKPProjekat\IKP_Projekat\WinSockClient\Client.cpp(56,37): warning C4996: 'inet_addr': Use inet_pton() or InetPton() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+D:\7. semestar\IKP\Projekat\IKPProjekat\IKP_Projekat\WinSockClient\Client.cpp(101,9): warning C4996: 'scanf': This function or variable may be unsafe. Consider using scanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+D:\7. semestar\IKP\Projekat\IKPProjekat\IKP_Projekat\WinSockClient\Client.cpp(106,9): warning C4996: 'scanf': This function or variable may be unsafe. Consider using scanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
   WinSockClient.vcxproj -> D:\7. semestar\IKP\Projekat\IKPProjekat\IKP_Projekat\Debug\WinSockClient.exe

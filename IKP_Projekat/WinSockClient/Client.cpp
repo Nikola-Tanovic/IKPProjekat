@@ -14,6 +14,11 @@
 // Returns true if succeeded, false otherwise.
 bool InitializeWindowsSockets();
 
+typedef struct request {
+    long fileId;
+    long bufferSize;
+};
+
 int __cdecl main(int argc, char** argv)
 {
     // socket used to communicate with server
@@ -24,9 +29,7 @@ int __cdecl main(int argc, char** argv)
     int result = 0;
 
     // message to send
-    char messageToSend[100];
-
-
+    request requestMessage;
 
     if (InitializeWindowsSockets() == false)
     {
@@ -93,11 +96,20 @@ int __cdecl main(int argc, char** argv)
             break;
         }
 
-        printf("Unesite poruku: ");
-        scanf("%s", messageToSend);
+        long fileId = -1;
+        printf("Unesite id fajla koji zelite: ");
+        scanf("%ld", &fileId);
+        requestMessage.fileId = htonl(fileId);
+       
+        long bufferSize = -1;
+        printf("\nUnesite velicinu fajla koju zelite da smestite kod sebe: ");
+        scanf("%ld", &bufferSize);
+        requestMessage.bufferSize = htonl(bufferSize);
+
+
 
         // Send an prepared message with null terminator included
-        iResult = send(connectSocket, messageToSend, (int)strlen(messageToSend) + 1, 0);
+        iResult = send(connectSocket, (char*)&requestMessage, (int)sizeof(request), 0);
 
         if (iResult == SOCKET_ERROR)
         {

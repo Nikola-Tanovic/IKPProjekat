@@ -210,6 +210,7 @@ int  main(void)
         closesocket(listenSocket);
         WSACleanup();
         free(head);
+        freeMap(hashMap);
         return 0;
     }
 
@@ -256,6 +257,8 @@ DWORD WINAPI clientThreadFunction(LPVOID lpParam) {
 
     char recvBuff[DEFAULT_BUFLEN];
     unsigned long mode = 1;
+   
+
 
     clientCommunicationThreadParameters* tParameters = (clientCommunicationThreadParameters*)lpParam;
 
@@ -298,12 +301,45 @@ DWORD WINAPI clientThreadFunction(LPVOID lpParam) {
         iResult = recv(tParameters->acceptedSocket, recvBuff, DEFAULT_BUFLEN, 0);
         if (iResult > 0)
         {
+            recvBuff[iResult] = '\0';
+           
+          
+            request* clientRequest = (request*)recvBuff;
+
             EnterCriticalSection(&(tParameters->printCS));
             printf("Client: IPAddress: %s Port: %d\n", inet_ntoa(tParameters->clientAddr.sin_addr), ntohs(tParameters->clientAddr.sin_port));
             printf("Thread ID: %d\n", tParameters->threadId);
-            printf("Message received from client: %s.\n", recvBuff);
+            printf("Request from client:\nFile ID: %ld\nClient buff size: %ld\n", ntohl(clientRequest->fileId), ntohl(clientRequest->bufferSize));
             FD_CLR(tParameters->acceptedSocket, &readfds);
             LeaveCriticalSection(&(tParameters->printCS));
+            
+            //citanje fajl i podatke o njegovim delovima iz hash mape
+
+            /*
+            kada se klijent diskonektuje, moramo da update hash mapu tj. da sockaddr stavimo na 0
+            prvo pretrazimo hash mapu po file id i tako nadjemo taj node u hash mapi. Dobijemo pokazivac na strukturu 
+            koja ima pokazivac na ceo fajl i listu filePartData. Prolazimo kroz tu listu i trazimo filePartData koji ima isti
+            sockaddr kao i klijent sa kojim komuniciramo na ovom threadu. Tom filePartData stavimo 0 na adresu i port socketa(logicko brisanje) 
+
+            */
+
+            /*
+            * proveravamo da li je lista prazna. Ako jeste, onda imamo prvi ikada zahtev od klijeta,  i onda saljemo ceo fajl
+            Ako lista nije prazna, prolazimo kroz nju, i proveravamo za svaki clan liste:
+                1) Ako su mu adresa i port na 0, onda samo u odgovoru za klijenta pakujemo deo fajla sa te pocetne adrese i velicine 
+                koji imamo zapisano u tom cvoru liste(taj cvor liste je u stvari filePartData strucktura)
+                2) Ako mu addr i port nisu na 0, onda samo taj filePartData spakujemo u odgovor klijentu(videcemo sta cemo mu slati)
+
+            */
+
+
+            //slanje tih podataka ka klijenut
+
+            //cekanje potvrde klijenta da je primio
+
+            //posle potvrde radimo upis u hash mapu
+
+
         }
         else if (iResult == 0)
         {
@@ -326,6 +362,10 @@ DWORD WINAPI clientThreadFunction(LPVOID lpParam) {
     EnterCriticalSection(&(tParameters->threadListCS));
     threadNode* nodeToDelete = findthreadNodeByThreadId(*(tParameters->head), tParameters->threadId);
     LeaveCriticalSection(&(tParameters->threadListCS));
+
+    
+    //ovde radimo onu logiku za brisanje iz hash mape tj. logicko brisanje
+    //treba da se to radi u critical section za menjanje mape. 
 
     CloseHandle(nodeToDelete->thread);
 

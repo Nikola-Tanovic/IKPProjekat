@@ -8,7 +8,7 @@ typedef struct filePartData {
 	sockaddr_in ipClientSocket; 	//there is port
 	char* filePartAddress;
 	int filePartSize;
-	//filePartData* nextPart;
+	filePartData* nextPart;
 }filePartData;
 
 typedef struct hashValue {
@@ -18,3 +18,7 @@ typedef struct hashValue {
 }hashValue;
 
 
+typedef struct request {
+	long fileId;
+	long bufferSize;
+};
