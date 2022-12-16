@@ -35,6 +35,12 @@ typedef struct listenThreadParameters {
     DWORD threadId;
 }listenThreadParameters;
 
+typedef struct errorResponse {
+    char* responseMessage;
+    long filesCount;
+};
+
+
 DWORD WINAPI clientThreadFunction(LPVOID lpParam);
 DWORD WINAPI listenThreadFunction(LPVOID lpParam);
 
@@ -257,8 +263,7 @@ DWORD WINAPI clientThreadFunction(LPVOID lpParam) {
 
     char recvBuff[DEFAULT_BUFLEN];
     unsigned long mode = 1;
-   
-
+    long fileCount = FILE_COUNT;
 
     clientCommunicationThreadParameters* tParameters = (clientCommunicationThreadParameters*)lpParam;
 
@@ -277,6 +282,21 @@ DWORD WINAPI clientThreadFunction(LPVOID lpParam) {
     timeVal.tv_usec = 0;
 
     //printf("Konektovan novi klijent\n");
+
+    fileCount = htonl(fileCount);
+    //inicijalni send ka klijntu, da bi znao koliko ima fajlova
+    iResult = send(tParameters->acceptedSocket, (char*)&fileCount, (int)sizeof(long), 0);
+
+    if (iResult == SOCKET_ERROR)
+    {
+        printf("send failed with error: %d\n", WSAGetLastError());
+        closesocket(tParameters->acceptedSocket);
+        WSACleanup();
+    }
+
+    EnterCriticalSection(&tParameters->printCS);
+    printf("Bytes Sent to client: %ld\n", iResult);
+    LeaveCriticalSection(&tParameters->printCS);
 
     do
     {
@@ -305,15 +325,30 @@ DWORD WINAPI clientThreadFunction(LPVOID lpParam) {
            
           
             request* clientRequest = (request*)recvBuff;
+            clientRequest->fileId = ntohl(clientRequest->fileId);
+            clientRequest->bufferSize = ntohl(clientRequest->bufferSize);
 
             EnterCriticalSection(&(tParameters->printCS));
             printf("Client: IPAddress: %s Port: %d\n", inet_ntoa(tParameters->clientAddr.sin_addr), ntohs(tParameters->clientAddr.sin_port));
             printf("Thread ID: %d\n", tParameters->threadId);
-            printf("Request from client:\nFile ID: %ld\nClient buff size: %ld\n", ntohl(clientRequest->fileId), ntohl(clientRequest->bufferSize));
+            printf("Request from client:\nFile ID: %ld\nClient buff size: %ld\n", clientRequest->fileId, clientRequest->bufferSize);
             FD_CLR(tParameters->acceptedSocket, &readfds);
             LeaveCriticalSection(&(tParameters->printCS));
             
             //citanje fajl i podatke o njegovim delovima iz hash mape
+            /*
+            * proveravamo da li je lista prazna. Ako jeste, onda imamo prvi ikada zahtev od klijeta,  i onda saljemo ceo fajl
+            Ako lista nije prazna, prolazimo kroz nju, i proveravamo za svaki clan liste:
+                1) Ako su mu adresa i port na 0, onda samo u odgovoru za klijenta pakujemo deo fajla sa te pocetne adrese i velicine
+                koji imamo zapisano u tom cvoru liste(taj cvor liste je u stvari filePartData strucktura)
+                2) Ako mu addr i port nisu na 0, onda samo taj filePartData spakujemo u odgovor klijentu(videcemo sta cemo mu slati)
+
+                takodje raditi provere ako klijent posalje fileID koji je veci od broja fajlova, onda posalji gresku klijentu
+                i reci koliki broj fajlova postoji.
+            */
+
+          
+
 
             /*
             kada se klijent diskonektuje, moramo da update hash mapu tj. da sockaddr stavimo na 0
@@ -323,14 +358,7 @@ DWORD WINAPI clientThreadFunction(LPVOID lpParam) {
 
             */
 
-            /*
-            * proveravamo da li je lista prazna. Ako jeste, onda imamo prvi ikada zahtev od klijeta,  i onda saljemo ceo fajl
-            Ako lista nije prazna, prolazimo kroz nju, i proveravamo za svaki clan liste:
-                1) Ako su mu adresa i port na 0, onda samo u odgovoru za klijenta pakujemo deo fajla sa te pocetne adrese i velicine 
-                koji imamo zapisano u tom cvoru liste(taj cvor liste je u stvari filePartData strucktura)
-                2) Ako mu addr i port nisu na 0, onda samo taj filePartData spakujemo u odgovor klijentu(videcemo sta cemo mu slati)
-
-            */
+            
 
 
             //slanje tih podataka ka klijenut
