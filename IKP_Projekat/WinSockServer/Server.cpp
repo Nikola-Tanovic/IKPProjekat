@@ -7,6 +7,7 @@
 #include "hashMap.h";
 
 
+
 #define DEFAULT_BUFLEN 512
 #define DEFAULT_PORT "27016"
 #define FILE_COUNT 10
@@ -22,6 +23,7 @@ typedef struct clientCommunicationThreadParameters {
     DWORD threadId;
     int* exitFlag;
     threadNode** head;
+    hashMap* hashMap;
 }clientCommunicationThreadParameters;
 
 typedef struct listenThreadParameters {
@@ -33,6 +35,7 @@ typedef struct listenThreadParameters {
     CRITICAL_SECTION printCS;
     int* exitFlag;
     DWORD threadId;
+    hashMap* hashMap;
 }listenThreadParameters;
 
 typedef struct errorResponse {
@@ -41,8 +44,11 @@ typedef struct errorResponse {
 };
 
 
+
+
 DWORD WINAPI clientThreadFunction(LPVOID lpParam);
 DWORD WINAPI listenThreadFunction(LPVOID lpParam);
+
 
 int  main(void)
 {
@@ -187,6 +193,7 @@ int  main(void)
     ltParams->exitFlag = &exitFlag;
     ltParams->threadId = 0;
     ltParams->acceptedSocket = INVALID_SOCKET;
+    ltParams->hashMap = hashMap;
 
     // listenSocket, head, hashMapCS, threadListCS, printCS
 
@@ -292,6 +299,7 @@ DWORD WINAPI clientThreadFunction(LPVOID lpParam) {
         printf("send failed with error: %d\n", WSAGetLastError());
         closesocket(tParameters->acceptedSocket);
         WSACleanup();
+
     }
 
     EnterCriticalSection(&tParameters->printCS);
@@ -322,8 +330,6 @@ DWORD WINAPI clientThreadFunction(LPVOID lpParam) {
         if (iResult > 0)
         {
             recvBuff[iResult] = '\0';
-           
-          
             request* clientRequest = (request*)recvBuff;
             clientRequest->fileId = ntohl(clientRequest->fileId);
             clientRequest->bufferSize = ntohl(clientRequest->bufferSize);
@@ -343,24 +349,165 @@ DWORD WINAPI clientThreadFunction(LPVOID lpParam) {
                 koji imamo zapisano u tom cvoru liste(taj cvor liste je u stvari filePartData strucktura)
                 2) Ako mu addr i port nisu na 0, onda samo taj filePartData spakujemo u odgovor klijentu(videcemo sta cemo mu slati)
 
+                Kako pamtimo onaj ostatak od fajla na kraju koji nije ni kod jednog klijenta?
+                Tako sto prolazimo kroz listu i detektujemo poslednji clan liste, pamtimo pocetnu adresu tog dela fajla i velicinu
+                i onda citamo sa adrese + velicinu iz cistog fajla i taj deo fajla pakujemo za klijenta
+
+
                 takodje raditi provere ako klijent posalje fileID koji je veci od broja fajlova, onda posalji gresku klijentu
-                i reci koliki broj fajlova postoji.
+                i reci koliki broj fajlova postoji. (ovo smo sredili, napravili smo logiku na klijentu gde mu ne da da posalje veci broj od broja fajlova
+                ili manji broj od 0)
+
+                Klijentu cemo slati stukturu podataka koja ce sadrzati 3 polja:
+                1) Niz delova fajlova
+                2) Niz filePartData
+                3) Broj clanova tih nizova (ovo cemo videti koliki ce biti)
+
+                U slucaju da u listi imamo podatke o klijentu, te podatke cemo stavljati u niz filePartData, a u niz delova fajlova cemo 
+                stavljati NULL
+                U slucaju da u listi nemamo podatke o klijentu, onda cemo u niz filePartData stavljati , dok u niz delova fajlova
+                cemo stavljati 
+
+
             */
-
-          
-
 
             /*
-            kada se klijent diskonektuje, moramo da update hash mapu tj. da sockaddr stavimo na 0
-            prvo pretrazimo hash mapu po file id i tako nadjemo taj node u hash mapi. Dobijemo pokazivac na strukturu 
-            koja ima pokazivac na ceo fajl i listu filePartData. Prolazimo kroz tu listu i trazimo filePartData koji ima isti
-            sockaddr kao i klijent sa kojim komuniciramo na ovom threadu. Tom filePartData stavimo 0 na adresu i port socketa(logicko brisanje) 
+            * 
+            * KAD BUDEMO UPISIVALI U HASH MAP, MORAMO DA ZA PORT KLIJENTA POZOVEMO NTOHS
+            * 
+             KAD BUDEMO PRAVILI SOCKADDR_IN, NE SMEMO DA ZABORAVIMO DA PRILIKOM POSTAVLJANJA PORTA, KAZEMO HTONS,
+             I TAKO NA KLIJENTU KAZEMO NTOHS
+             I TAKODJE DA SA ADRESOM URADIMO INET_ADDR
+             */
 
-            */
+            EnterCriticalSection(&tParameters->hashMapCS);
+            hashValue* fileData = hmSearch(tParameters->hashMap, (int)clientRequest->fileId);
+            LeaveCriticalSection(&tParameters->hashMapCS);
 
+            fileDataResponse* response = (fileDataResponse*)malloc(sizeof(fileDataResponse));
+            response->responseSize = sizeof(fileDataResponse);
+          
+            // 1) treba da dobavimo koliko je velicina fajla, tj. koliko fajl ima bajtova
+                //char** array = malloc(totalstrings * sizeof(char*));
+                //for (i = 0; i < totalstrings; ++i) {
+                //      array[i] = (char*)malloc(stringsize + 1);
             
+            response->filePartData = NULL;
+            response->partsCount = 0;
+            
+            
+         
+            if (fileData->filePartDataList == NULL) {
+                
+                response->filePartData = (filePartDataResponse*)malloc(1 * sizeof(filePartDataResponse));
+                response->filePartData->filePartAddress = (char*)malloc(strlen(*(fileData->completeFile)) + 1);
+                response->responseSize += sizeof(filePartDataResponse) + strlen(*(fileData->completeFile)) + 1;
+
+                //ovde je prvi zahtev od bilo kog klijenta za taj fajl i mi tu treba da dodamo samo
+                //podatke o klijentu, a klijentu saljemo ceo fajl.
+                memcpy(response->filePartData->filePartAddress, fileData->completeFile[0], strlen(fileData->completeFile[0]) + 1);
+                response->filePartData->ipClientSocket.sin_port = htons(0); 
+                response->filePartData->ipClientSocket.sin_addr.S_un.S_addr = inet_addr("0.0.0.0");  /// da li se ovako postavlja adresa na 0 da li moramo da uradimo htnos
+                response->filePartData->filePartSize = htonl(strlen(fileData->completeFile[0]) + 1);
+                response->filePartData->relativeAddress = htonl(0);
 
 
+                EnterCriticalSection(&(tParameters->printCS));
+                printf("\nFajl: %s", response->filePartData->filePartAddress);
+                LeaveCriticalSection(&(tParameters->printCS));
+                response->partsCount = 1;
+                
+            }
+            else {
+               /*
+                Ako lista nije prazna, prolazimo kroz nju, i proveravamo za svaki clan liste:
+                1) Ako su mu adresa i port na 0, onda samo u odgovoru za klijenta pakujemo deo fajla sa te pocetne adrese i velicine
+                koji imamo zapisano u tom cvoru liste(taj cvor liste je u stvari filePartData strucktura)
+                2) Ako mu addr i port nisu na 0, onda samo taj filePartData spakujemo u odgovor klijentu(videcemo sta cemo mu slati)
+                */
+                int  i = 0;
+                filePartData* iterator = fileData->filePartDataList;
+
+                while(iterator != NULL)
+                {
+                    
+                    response->filePartData += i * sizeof(filePartDataResponse);
+                    response->filePartData = (filePartDataResponse*)malloc(1 * sizeof(filePartDataResponse));
+                    response->responseSize += sizeof(filePartDataResponse);
+                    response->partsCount = i;
+                    if (iterator->ipClientSocket.sin_addr.S_un.S_addr == inet_addr("0.0.0.0") && ntohs(iterator->ipClientSocket.sin_port) == 0) {
+
+                        //nama je sad ovo 0, znaci nemamo da je ovaj deo fajla na klijentu
+                        response->filePartData[i].ipClientSocket = iterator->ipClientSocket;
+                        response->filePartData[i].filePartAddress = (char*)malloc(iterator->filePartSize * sizeof(char));
+                        response->responseSize += iterator->filePartSize * sizeof(char);
+                        memcpy(response->filePartData[i].filePartAddress, iterator->filePartAddress, iterator->filePartSize);
+                        response->filePartData[i].filePartSize = htonl(iterator->filePartSize);  
+                        response->filePartData[i].relativeAddress = htonl(iterator->filePartAddress - *(fileData->completeFile));
+                    }
+                    else {
+                        //ovde imamo da je deo fajla kod nekog klijenta, tako da treba da upisemo podatke o klijentu
+                        /*
+                        KAda saljemo podatke o delu fajla koji je na nekom klijentu, stavljamo da je adresa u response NULL
+                        da klijent ne bi mogao samo da cita sa te adrese, nego da mora da se konektuje na drugog klijenta. On ce znati
+                        gde da smesta te delove fajla koje je nabavio od drugih klijenata tako sto cemo mu poslati relativnu adresu
+                        tog dela fajla, odnosno razliku pocetne adrese celog fajla i pocetne adrese tog dela fajla. Tu relativnu adresu
+                        cemo slati za svaki slicaj i kada saljemo cist deo fajla sa servera
+                        U strukturu koju saljemo klijentima stavimo jos jedno polje relativne adrese
+                        */
+                        
+                        response->filePartData[i].ipClientSocket = iterator->ipClientSocket;
+                        response->filePartData[i].filePartAddress = NULL;
+                        response->filePartData[i].filePartSize = htonl(iterator->filePartSize);
+                        response->filePartData[i].relativeAddress = htonl(iterator->filePartAddress - *(fileData->completeFile));
+                    }
+                    i++;
+                    iterator = iterator->nextPart;
+                }
+
+                //proveravamo da li posle ovih delova fajla imamo jos ostatak cistog fajla
+                if (!(response->filePartData[i].relativeAddress + response->filePartData[i].filePartSize == strlen(*(fileData->completeFile)))) {
+                    response->filePartData += i * sizeof(filePartDataResponse);
+                    response->filePartData = (filePartDataResponse*)malloc(1 * sizeof(filePartDataResponse));
+                    response->responseSize += sizeof(filePartDataResponse);
+
+                    //stavimo u poslednji element filePartData stavimo pocetnu adresu ostatka fajla a dobijemo je tako sto saberemo adresu pocetka
+                    //celog fajla i na nju dodamo relativnu pocetnu adresu poslednjeg dela fajla iz naseg iteriranja i njegovu velicinu
+                    char* lastPartAddress = *(fileData->completeFile) + response->filePartData[i].relativeAddress + response->filePartData[i].filePartSize;
+
+                    int sizeOfTheLastPart = strlen(*(fileData->completeFile)) - (response->filePartData[i].relativeAddress + response->filePartData[i].filePartSize);
+
+                    response->filePartData[i].filePartAddress = (char*)malloc(sizeOfTheLastPart * sizeof(char) + 1);
+                    response->responseSize += sizeOfTheLastPart * sizeof(char) + 1;
+                    memcpy(response->filePartData[i].filePartAddress, lastPartAddress, sizeOfTheLastPart + 1);
+
+                    response->partsCount += 1;
+                    response->filePartData->filePartSize = htonl(sizeOfTheLastPart);
+                    response->filePartData->relativeAddress = htonl(lastPartAddress - *(fileData->completeFile));
+                    response->filePartData->ipClientSocket.sin_port = htons(0);
+                    response->filePartData->ipClientSocket.sin_addr.S_un.S_addr = inet_addr("0.0.0.0");
+                }
+            }
+
+            response->partsCount = htonl(response->partsCount);
+            response->responseSize = htons(response->responseSize);
+
+            iResult = send(tParameters->acceptedSocket, (char*)response, (int)sizeof(response), 0);
+            if (iResult == SOCKET_ERROR)
+            {
+                printf("send failed with error: %d\n", WSAGetLastError());
+                closesocket(tParameters->acceptedSocket);
+                WSACleanup();
+                break;
+            }
+
+            updateFilePartData(&(fileData->filePartDataList), tParameters->clientAddr);
+
+            for (int i = 0; i < response->partsCount; i++) {
+                free(response->filePartData[i].filePartAddress);
+                free(response->filePartData + i * sizeof(filePartDataResponse));
+            }
+            free(response);
             //slanje tih podataka ka klijenut
 
             //cekanje potvrde klijenta da je primio
@@ -385,6 +532,15 @@ DWORD WINAPI clientThreadFunction(LPVOID lpParam) {
             break;
         }
     } while (!*(tParameters->exitFlag));
+
+    /*
+           kada se klijent diskonektuje, moramo da update hash mapu tj. da sockaddr stavimo na 0
+           prvo pretrazimo hash mapu po file id i tako nadjemo taj node u hash mapi. Dobijemo pokazivac na strukturu
+           koja ima pokazivac na ceo fajl i listu filePartData. Prolazimo kroz tu listu i trazimo filePartData koji ima isti
+           sockaddr kao i klijent sa kojim komuniciramo na ovom threadu. Tom filePartData stavimo 0 na adresu i port socketa(logicko brisanje)
+
+    */
+
     
     //zatvaranje thread-a i close socket 
     EnterCriticalSection(&(tParameters->threadListCS));
@@ -472,6 +628,7 @@ DWORD WINAPI listenThreadFunction(LPVOID lpParam) {
             tParameters->threadId = 0;
             tParameters->exitFlag = ltParams->exitFlag;     //umesto return value zvacemo ga exit koji cemo upisivati u main threa-du
             tParameters->head = ltParams->head;             //dodacemo i polje head pokazivac na listu thread=ova koji kominiciraju sa klijentom.
+            tParameters->hashMap = ltParams->hashMap;
 
             HANDLE clientCommunicaitonThread = CreateThread(NULL, 0, &clientThreadFunction, tParameters, 0, &(tParameters->threadId));
 
@@ -554,3 +711,4 @@ DWORD WINAPI listenThreadFunction(LPVOID lpParam) {
 
     return 0;
 }
+

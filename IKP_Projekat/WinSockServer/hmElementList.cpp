@@ -1,4 +1,4 @@
-#include "hmElementList.h";
+#include "lists.h";
 
 colisionHmItem* allocateCollisionHmItem() {
     // Allocates memory for a Linkedlist pointer

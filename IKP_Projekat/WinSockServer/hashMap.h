@@ -1,5 +1,5 @@
 #pragma once
-#include "hmElementList.h";
+#include "lists.h";
 
 #define MAP_SIZE 3  //size of hash map
 

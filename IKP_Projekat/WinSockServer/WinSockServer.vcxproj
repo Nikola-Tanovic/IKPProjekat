@@ -77,15 +77,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="filePartDataList.cpp" />
     <ClCompile Include="hashMap.cpp" />
     <ClCompile Include="hmElementList.cpp" />
     <ClCompile Include="Server.cpp" />
     <ClCompile Include="threadList.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="filePartDataList.h" />
     <ClInclude Include="hashMap.h" />
-    <ClInclude Include="hmElementList.h" />
+    <ClInclude Include="lists.h" />
     <ClInclude Include="structures.h" />
     <ClInclude Include="threadList.h" />
   </ItemGroup>

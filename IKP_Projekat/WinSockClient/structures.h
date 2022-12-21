@@ -1,4 +1,5 @@
 #pragma once
+
 #include "ws2tcpip.h"
 #include "stdio.h";
 #include "stdlib.h";
@@ -21,17 +22,10 @@ typedef struct hashValue {
 typedef struct request {
 	long fileId;
 	long bufferSize;
-};
+}request;
 
 typedef struct filePartDataResponse {
 	sockaddr_in ipClientSocket; 	//there is port
 	char* filePartAddress;
 	int filePartSize;
-	int relativeAddress;
-};
-
-typedef struct fileDataResponse {
-	short responseSize;
-	long partsCount;
-	filePartDataResponse* filePartData; //niz fajlPartData
-}fileDataResponse;
+}filePartDataResponse;

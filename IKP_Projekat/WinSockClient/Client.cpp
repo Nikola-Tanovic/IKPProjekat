@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <conio.h>
+#include "structures.h";
 
 #define DEFAULT_BUFLEN 512
 #define DEFAULT_PORT 27016
@@ -14,10 +15,14 @@
 // Returns true if succeeded, false otherwise.
 bool InitializeWindowsSockets();
 
-typedef struct request {
-    long fileId;
-    long bufferSize;
-};
+
+typedef struct fileDataServerResponse {
+    short responseSize;
+    long partsCount;
+    char** fileParts;
+    filePartDataResponse* filePartData;
+}fileDataServerResponse;
+
 
 int __cdecl main(int argc, char** argv)
 {
@@ -26,14 +31,24 @@ int __cdecl main(int argc, char** argv)
     // variable used to store function return value
     int iResult;
 
+    char* recvBuff = NULL;
+
+
     int result = 0;
 
     // 
     long initialServerResponse = -1;
 
+    //ovde ce se smestati deo fajla koji se cuva kod klijenta
+    char* clientBuffer = NULL;
 
     // message to send
     request requestMessage;
+
+    
+    CRITICAL_SECTION printCS;
+
+
 
     if (InitializeWindowsSockets() == false)
     {
@@ -81,7 +96,7 @@ int __cdecl main(int argc, char** argv)
     timeVal.tv_sec = 0;
     timeVal.tv_usec = 0;
 
-
+    //inicijalno dobijanje koliko fajlova ima na serveru
     do {
         FD_ZERO(&readfds);
         FD_SET(connectSocket, &readfds);
@@ -120,10 +135,6 @@ int __cdecl main(int argc, char** argv)
             break;
         }
     } while (initialServerResponse == -1);
-
-
-
-
 
     while (1) {
 
@@ -175,10 +186,79 @@ int __cdecl main(int argc, char** argv)
 
         FD_CLR(connectSocket, &writefds);
 
+        fileDataServerResponse* serverResponse = (fileDataServerResponse*)malloc(sizeof(fileDataServerResponse));
+        //short recievedBytes = 0;
+
+        do{
+            FD_ZERO(&readfds);
+            FD_SET(connectSocket, &readfds);
+            int result = select(0, &readfds, NULL, NULL, &timeVal);
+
+            if (result == 0) {
+                //printf("Vreme za cekanje je isteklo (select pre recviver funkcije)\n");
+                //Sleep(1000);
+                continue;
+            }
+            else if (result == SOCKET_ERROR) {
+                printf("Connection with server closed.\n");
+                closesocket(connectSocket);
+                break;
+            }
+            
+            //moze da se desi greska ako saljemo mnogo bajtova da bude prepunjen ovaj default buflen
+            iResult = recv(connectSocket, recvBuff /*+ recievedBytes*/, DEFAULT_BUFLEN, 0);
+            if (iResult > 0) {
+                serverResponse = (fileDataServerResponse*)recvBuff;
+                serverResponse->responseSize = ntohs(serverResponse->responseSize);
+                serverResponse->partsCount = ntohl(serverResponse->partsCount);
+
+                for (int i = 0; i < requestMessage.bufferSize; i++) {
+                    clientBuffer[i] = serverResponse->fileParts[0][i];
+                }
+                clientBuffer[requestMessage.bufferSize] = '\0';
+
+                EnterCriticalSection(&printCS);
+                printf("\nPoruka od servera: %s", serverResponse->fileParts[0]);
+                LeaveCriticalSection(&printCS);
+
+                //recievedBytes += iResult;
+            }
+            else if (iResult == 0)
+            {
+                // connection was closed gracefully
+                //da li je ovde klijent gracefully zatvorio i kada se ulazi u ovaj deo koda
+                printf("Connection with client closed.\n");
+                closesocket(connectSocket);
+                break;
+            }
+            else
+            {
+                // there was an error during recv
+                printf("recv failed with error: %d\n", WSAGetLastError());
+                closesocket(connectSocket);
+                break;
+            }
+         
+            FD_CLR(connectSocket, &readfds);
+        } while (/*serverResponse->responseSize - recievedBytes > 0*/ 1);
+
+        /*//serverResponse = (fileDataServerResponse*)recvBuff;
+        serverResponse->fileParts = (char**)serverResponse->fileParts;
+        serverResponse->filePartData = (filePartDataResponse*)serverResponse->filePartData;
+        */
+
+        //ubacili smo deo poruke kod nas na serveru
+        
+
+
+
+        free(serverResponse);
     }
     // cleanup
+    
     closesocket(connectSocket);
     WSACleanup();
+
 
     return 0;
 }
