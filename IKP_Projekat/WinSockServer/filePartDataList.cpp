@@ -95,53 +95,36 @@ void printFoundFilePartData(filePartData* head, sockaddr_in ipClientSocket) {
 }
 
 void deleteFilePartDataLogical(filePartData** head, sockaddr_in ipClientSocket) {
-	filePartData* temp = *head, * prev = NULL;
-
-	if (temp != NULL && temp->ipClientSocket.sin_addr.S_un.S_addr == ipClientSocket.sin_addr.S_un.S_addr
-		&& temp->ipClientSocket.sin_port == ipClientSocket.sin_port) {
-		temp->ipClientSocket.sin_port = htons(0);
-		temp->ipClientSocket.sin_addr.S_un.S_addr = inet_addr("0.0.0.0");
-		return;
-	}
-
-	while (temp != NULL && temp->ipClientSocket.sin_addr.S_un.S_addr == ipClientSocket.sin_addr.S_un.S_addr
-		&& temp->ipClientSocket.sin_port == ipClientSocket.sin_port) {
-		prev = temp;
-		temp = temp->nextPart;
-	}
+	filePartData* temp = *head;
 
 	if (temp == NULL) {
 		return;
 	}
-	temp->ipClientSocket.sin_port = htons(0);
-	temp->ipClientSocket.sin_addr.S_un.S_addr = inet_addr("0.0.0.0");
-	
+	while (temp != NULL) {
+		if (temp->ipClientSocket.sin_addr.S_un.S_addr == ipClientSocket.sin_addr.S_un.S_addr
+			&& temp->ipClientSocket.sin_port == ipClientSocket.sin_port) {
+				temp->ipClientSocket.sin_port = htons(0);
+				temp->ipClientSocket.sin_addr.S_un.S_addr = inet_addr("0.0.0.0");
+				return;
+		}
+		temp = temp->nextPart;
+	}
+
 	return;
 }
 
-void updateFilePartData(filePartData** head, sockaddr_in ipClientSocket) {
-	filePartData* temp = *head, * prev = NULL;
-
-	if (temp != NULL && temp->ipClientSocket.sin_addr.S_un.S_addr == ipClientSocket.sin_addr.S_un.S_addr
-		&& temp->ipClientSocket.sin_port == ipClientSocket.sin_port) {
-		temp->ipClientSocket.sin_port = ipClientSocket.sin_port;
-		temp->ipClientSocket.sin_addr = ipClientSocket.sin_addr;
-		return;
-	}
-
-	while (temp != NULL && temp->ipClientSocket.sin_addr.S_un.S_addr == ipClientSocket.sin_addr.S_un.S_addr
-		&& temp->ipClientSocket.sin_port == ipClientSocket.sin_port) {
-		prev = temp;
+int updateFilePartData(filePartData** head, sockaddr_in ipClientSocket) {
+	filePartData* temp = *head;
+	
+	while (temp != NULL) {
+		if (temp->ipClientSocket.sin_addr.S_un.S_addr == inet_addr("0.0.0.0") &&
+			temp->ipClientSocket.sin_port == htons(0)) {
+			temp->ipClientSocket = ipClientSocket;
+			return 0;
+		}
 		temp = temp->nextPart;
 	}
-
-	if (temp == NULL) {
-		return;
-	}
-	temp->ipClientSocket.sin_port = ipClientSocket.sin_port;
-	temp->ipClientSocket.sin_addr = ipClientSocket.sin_addr;
-
-	return;
+	return 1;
 }
 
 

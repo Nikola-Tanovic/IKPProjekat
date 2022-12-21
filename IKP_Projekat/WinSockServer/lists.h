@@ -39,7 +39,7 @@ void printFoundFilePartData(filePartData* head, sockaddr_in ipClientSocket);
 
 void deleteFilePartDataLogical(filePartData** head, sockaddr_in ipClientSocket);
 
-void updateFilePartData(filePartData** head, sockaddr_in ipClientSocket);
+int updateFilePartData(filePartData** head, sockaddr_in ipClientSocket);
 
 int filePartDataCount(filePartData* head);
 
