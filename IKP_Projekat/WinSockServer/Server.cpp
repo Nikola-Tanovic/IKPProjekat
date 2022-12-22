@@ -406,7 +406,7 @@ DWORD WINAPI clientThreadFunction(LPVOID lpParam) {
             if (fileData.filePartDataList == NULL) {
                 
                 response->filePartData = (filePartDataResponse*)malloc(1 * sizeof(filePartDataResponse));
-                response->filePartData->filePartAddress = (char*)malloc(strlen(*(fileData.completeFile)) + 1);
+                response->filePartData->filePartAddress = (char*)malloc(sizeof(char) * (strlen(*(fileData.completeFile)) + 1));
                 response->responseSize += sizeof(filePartDataResponse) + strlen(*(fileData.completeFile)) + 1;
 
                 if (saveAddress) {
@@ -444,7 +444,6 @@ DWORD WINAPI clientThreadFunction(LPVOID lpParam) {
                     response->filePartData += i * sizeof(filePartDataResponse);
                     response->filePartData = (filePartDataResponse*)malloc(1 * sizeof(filePartDataResponse));
                     response->responseSize += sizeof(filePartDataResponse);
-                    response->partsCount = i;
                     if (iterator->ipClientSocket.sin_addr.S_un.S_addr == inet_addr("0.0.0.0") && ntohs(iterator->ipClientSocket.sin_port) == 0) {
                         if (saveAddress) {
                             filePartAddress = iterator->filePartAddress;
@@ -475,6 +474,7 @@ DWORD WINAPI clientThreadFunction(LPVOID lpParam) {
                         response->filePartData[i].relativeAddress = htonl(iterator->filePartAddress - *(fileData.completeFile));
                     }
                     i++;
+                    response->partsCount = i;
                     iterator = iterator->nextPart;
                 }
 
@@ -510,52 +510,56 @@ DWORD WINAPI clientThreadFunction(LPVOID lpParam) {
             response->partsCount = htonl(response->partsCount);
             response->responseSize = htons(response->responseSize);
 
-            if (iResult == SOCKET_ERROR)
-            {
-                printf("send failed with error: %d\n", WSAGetLastError());
-                closesocket(tParameters->acceptedSocket);
-                WSACleanup();
-                break;
-            }
-
-            //upis u hes mapu
-            if (fileData.filePartDataList == NULL) {
-                EnterCriticalSection(&(tParameters->hashMapCS));
-                insertAtEnd(&fileData.filePartDataList, createNewFilePartData(
-                    clientRequest->fileId, tParameters->clientAddr, filePartAddress, ntohs(response->filePartData->filePartSize)));
-                LeaveCriticalSection(&(tParameters->hashMapCS));
-            }
-            else {
-                EnterCriticalSection(&(tParameters->hashMapCS));
-                int updateFailed = updateFilePartData(&(fileData.filePartDataList), tParameters->clientAddr);
-                if (updateFailed) {
+            int sentBytes = 0;
+            do {                                                                         //ntohs
+                iResult = send(tParameters->acceptedSocket, (char*)response + sentBytes, ntohs(response->responseSize), 0);
+                if (iResult == SOCKET_ERROR)
+                {
+                    printf("send failed with error: %d\n", WSAGetLastError());
+                    closesocket(tParameters->acceptedSocket);
+                    WSACleanup();
+                    break;
+                }
+                sentBytes += iResult;
+            } while (ntohs(response->responseSize) - sentBytes > 0);
+           
+            //ako je ceo odgovor uspesno poslat radimo upis u hes mapu
+            if (sentBytes - response->responseSize == 0) {
+                //upis u hes mapu
+                if (fileData.filePartDataList == NULL) {
+                    EnterCriticalSection(&(tParameters->hashMapCS));
                     insertAtEnd(&fileData.filePartDataList, createNewFilePartData(
                         clientRequest->fileId, tParameters->clientAddr, filePartAddress, ntohs(response->filePartData->filePartSize)));
+                    LeaveCriticalSection(&(tParameters->hashMapCS));
                 }
-                LeaveCriticalSection(&(tParameters->hashMapCS));
-            }
+                else {
+                    EnterCriticalSection(&(tParameters->hashMapCS));
+                    int updateFailed = updateFilePartData(&(fileData.filePartDataList), tParameters->clientAddr);
+                    if (updateFailed) {
+                        insertAtEnd(&fileData.filePartDataList, createNewFilePartData(
+                            clientRequest->fileId, tParameters->clientAddr, filePartAddress, ntohs(response->filePartData->filePartSize)));
+                    }
+                    LeaveCriticalSection(&(tParameters->hashMapCS));
+                }
 
-            //korisnik je skinuo sad neki novi fajl pa moramo da ga izbrisemo iz evidencije za prethodni fajl
-            if (lastRequestedFileId != -1) {
-                EnterCriticalSection(&tParameters->hashMapCS);
-                hashValue* fileDataPointer = hmSearch(tParameters->hashMap, (int)clientRequest->fileId);
-                //hashValue fileData = *fileDataPointer;
-                deleteFilePartDataLogical(&(fileDataPointer->filePartDataList), tParameters->clientAddr);
-                LeaveCriticalSection(&tParameters->hashMapCS);
+                //korisnik je skinuo sad neki novi fajl pa moramo da ga izbrisemo iz evidencije za prethodni fajl
+                if (lastRequestedFileId != -1) {
+                    EnterCriticalSection(&tParameters->hashMapCS);
+                    hashValue* fileDataPointer = hmSearch(tParameters->hashMap, (int)clientRequest->fileId);
+                    //hashValue fileData = *fileDataPointer;
+                    deleteFilePartDataLogical(&(fileDataPointer->filePartDataList), tParameters->clientAddr);
+                    LeaveCriticalSection(&tParameters->hashMapCS);
+                }        
             }
-
-            for (int i = 0; i < response->partsCount; i++) {
+            
+            lastRequestedFileId = clientRequest->fileId;
+            int partCount = ntohs(response->partsCount);
+            //ntohs
+            for (int i = 0; i < partCount; i++) {
                 free(response->filePartData[i].filePartAddress);
                 free(response->filePartData + i * sizeof(filePartDataResponse));
             }
             free(response);
-            //slanje tih podataka ka klijenut
-
-            //cekanje potvrde klijenta da je primio
-
-            //posle potvrde radimo upis u hash mapu
-
-
         }
         else if (iResult == 0)
         {
@@ -582,6 +586,13 @@ DWORD WINAPI clientThreadFunction(LPVOID lpParam) {
 
     */
 
+    if (lastRequestedFileId != -1) {
+        EnterCriticalSection(&tParameters->hashMapCS);
+        hashValue* fileDataPointer = hmSearch(tParameters->hashMap, (int)lastRequestedFileId);
+        //hashValue fileData = *fileDataPointer;
+        deleteFilePartDataLogical(&(fileDataPointer->filePartDataList), tParameters->clientAddr);
+        LeaveCriticalSection(&tParameters->hashMapCS);
+    }
     
     //zatvaranje thread-a i close socket 
     EnterCriticalSection(&(tParameters->threadListCS));
@@ -649,6 +660,16 @@ DWORD WINAPI listenThreadFunction(LPVOID lpParam) {
             {
                 printf("accept failed with error: %d\n", WSAGetLastError());
                 closesocket(ltParams->listenSocket);
+                WSACleanup();
+                break;
+            }
+
+            int iResult = send(ltParams->acceptedSocket, (char*)&clientAddr, sizeof(sockaddr_in), 0);
+
+            if (iResult == SOCKET_ERROR)
+            {
+                printf("send failed with error: %d\n", WSAGetLastError());
+                closesocket(ltParams->acceptedSocket);
                 WSACleanup();
                 break;
             }

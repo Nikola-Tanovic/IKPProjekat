@@ -28,4 +28,11 @@ typedef struct filePartDataResponse {
 	sockaddr_in ipClientSocket; 	//there is port
 	char* filePartAddress;
 	int filePartSize;
-}filePartDataResponse;
+	int relativeAddress;
+};
+
+typedef struct fileDataResponse {
+	short responseSize;
+	long partsCount;
+	filePartDataResponse* filePartData; //niz fajlPartData
+}fileDataResponse;
