@@ -409,6 +409,7 @@ DWORD WINAPI clientThreadFunction(LPVOID lpParam) {
                 response->filePartData->filePartAddress = (char*)malloc(sizeof(char) * (strlen(*(fileData.completeFile)) + 1));
                 response->responseSize += sizeof(filePartDataResponse) + strlen(*(fileData.completeFile)) + 1;
 
+                //ovo koristimo da pamtimo pocetnu adresu prvog dela fajla na koji naidjemo a da nije smesten ni na jednom klijentu
                 if (saveAddress) {
                     filePartAddress = fileData.completeFile[0];
                     saveAddress = 0;
@@ -437,12 +438,20 @@ DWORD WINAPI clientThreadFunction(LPVOID lpParam) {
                 */
                 int  i = 0;
                 filePartData* iterator = fileData.filePartDataList;
+                filePartDataResponse* firstFilePartData = NULL;
 
                 while(iterator != NULL)
                 {
                     
                     response->filePartData += i * sizeof(filePartDataResponse);
                     response->filePartData = (filePartDataResponse*)malloc(1 * sizeof(filePartDataResponse));
+
+                    //pocetnu adresu niza file part data stalno pomeramo, pa je potrebno da sacuvamo pocetnu adresu file part data
+                    //koja pokazuje na prvi clan niza
+                    if (i == 0) {
+                        firstFilePartData = response->filePartData;
+                    }
+
                     response->responseSize += sizeof(filePartDataResponse);
                     if (iterator->ipClientSocket.sin_addr.S_un.S_addr == inet_addr("0.0.0.0") && ntohs(iterator->ipClientSocket.sin_port) == 0) {
                         if (saveAddress) {
@@ -505,6 +514,10 @@ DWORD WINAPI clientThreadFunction(LPVOID lpParam) {
                     response->filePartData->ipClientSocket.sin_port = htons(0);
                     response->filePartData->ipClientSocket.sin_addr.S_un.S_addr = inet_addr("0.0.0.0");
                 }
+
+                //posto smo response->filePartData menjali u iteracijama, onda ce ona pokazivati na poslednji clan u nizu,
+                //ovom linijom moramo da vratimo da respon
+                response->filePartData = firstFilePartData;
             }
 
             response->partsCount = htonl(response->partsCount);
@@ -702,54 +715,6 @@ DWORD WINAPI listenThreadFunction(LPVOID lpParam) {
             insertAtHead(ltParams->head, tn);
             printList(*(ltParams->head));
             LeaveCriticalSection(&(ltParams->threadListCS));
-
-            /*
-            // postavljanje soketa u neblokirajuci rezim
-            iResult = ioctlsocket(acceptedSocket, FIONBIO, &mode);
-            if (iResult != NO_ERROR)
-                printf("ioctlsocket failed with error: %ld\n", iResult);
-
-            do
-            {
-                FD_ZERO(&readfds);
-                FD_SET(acceptedSocket, &readfds);
-
-                result = select(0, &readfds, NULL, NULL, &timeVal);
-
-                if (result == 0) {
-                    printf("Vreme za cekanje je isteklo (select pre recviver funkcije)\n");
-                    Sleep(1000);
-                    continue;
-                }
-                else if (result == SOCKET_ERROR) {
-                    // connection was closed gracefully
-                    printf("Connection with client closed.\n");
-                    closesocket(acceptedSocket);
-                    break;
-                }
-
-                // Receive data until the client shuts down the connection
-                iResult = recv(acceptedSocket, recvbuf, DEFAULT_BUFLEN, 0);
-                if (iResult > 0)
-                {
-                    printf("Message received from client: %s.\n", recvbuf);
-                    FD_CLR(acceptedSocket, &readfds);
-                }
-                else if (iResult == 0)
-                {
-                    // connection was closed gracefully
-                    printf("Connection with client closed.\n");
-                    closesocket(acceptedSocket);
-                }
-                else
-                {
-                    // there was an error during recv
-                    printf("recv failed with error: %d\n", WSAGetLastError());
-                    closesocket(acceptedSocket);
-                }
-            } while (iResult > 0);
-
-            // here is where server shutdown loguc could be placed*/
 
         }
 
