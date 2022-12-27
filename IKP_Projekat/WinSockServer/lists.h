@@ -4,7 +4,7 @@
 
 // Define the Hash map Item here
 typedef struct hmItem {
-    int key;
+    int key; //id fajla
     hashValue* value;
 }hmItem;
 

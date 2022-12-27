@@ -25,13 +25,13 @@ void printList(filePartData* head) {
 }
 
 //ne zaboraviti da ovde prilikom postavljanja ipClientSocket.port kazemo htons
-filePartData* createNewFilePartData(int idFile, sockaddr_in ipClientSocket,
-	char* filePartAddress, int filePartSize) {
+filePartData* createNewFilePartData(int idFile, sockaddr_in ipClientSocket, char* filePartAddress, int filePartSize) {
 	filePartData* newNode = (filePartData*)malloc(sizeof(filePartData));
-	newNode->filePartAddress = filePartAddress; //jel moze ovo ovako
+	newNode->filePartAddress = (char*)malloc(sizeof(char) * filePartSize);
 	newNode->idFile = idFile;
 	newNode->filePartSize = filePartSize;
 	newNode->ipClientSocket = ipClientSocket;
+	memcpy(newNode->filePartAddress, filePartAddress, filePartSize);
 	newNode->nextPart = NULL;
 	return newNode;
 }

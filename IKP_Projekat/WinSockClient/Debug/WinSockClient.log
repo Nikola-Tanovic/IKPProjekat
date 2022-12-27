@@ -3,16 +3,12 @@ D:\7. semestar\IKP\IKPProjekat\IKP_Projekat\WinSockClient\Client.cpp(9,10): warn
 D:\7. semestar\IKP\IKPProjekat\IKP_Projekat\WinSockClient\structures.h(4,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
 D:\7. semestar\IKP\IKPProjekat\IKP_Projekat\WinSockClient\structures.h(5,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
 D:\7. semestar\IKP\IKPProjekat\IKP_Projekat\WinSockClient\structures.h(32,2): warning C4091: 'typedef ': ignored on left of 'filePartDataResponse' when no variable is declared
-D:\7. semestar\IKP\IKPProjekat\IKP_Projekat\WinSockClient\Client.cpp(82,37): warning C4996: 'inet_addr': Use inet_pton() or InetPton() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
-D:\7. semestar\IKP\IKPProjekat\IKP_Projekat\WinSockClient\Client.cpp(99,90): warning C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
-D:\7. semestar\IKP\IKPProjekat\IKP_Projekat\WinSockClient\Client.cpp(190,5): warning C4996: 'itoa': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _itoa. See online help for details.
-D:\7. semestar\IKP\IKPProjekat\IKP_Projekat\WinSockClient\Client.cpp(162,10): warning C4101: 'recvbuf': unreferenced local variable
-D:\7. semestar\IKP\IKPProjekat\IKP_Projekat\WinSockClient\Client.cpp(544,24): warning C4477: 'printf' : format string '%d' requires an argument of type 'int', but variadic argument 1 has type 'char *'
-D:\7. semestar\IKP\IKPProjekat\IKP_Projekat\WinSockClient\Client.cpp(544,24): warning C4473: 'printf' : not enough arguments passed for format string
-D:\7. semestar\IKP\IKPProjekat\IKP_Projekat\WinSockClient\Client.cpp(544,24): message : placeholders and their parameters expect 2 variadic arguments, but 1 were provided
-D:\7. semestar\IKP\IKPProjekat\IKP_Projekat\WinSockClient\Client.cpp(544,24): message : the missing variadic argument 2 is required by format string '%s'
-D:\7. semestar\IKP\IKPProjekat\IKP_Projekat\WinSockClient\Client.cpp(431,13): warning C4996: 'scanf': This function or variable may be unsafe. Consider using scanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-D:\7. semestar\IKP\IKPProjekat\IKP_Projekat\WinSockClient\Client.cpp(438,9): warning C4996: 'scanf': This function or variable may be unsafe. Consider using scanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-D:\7. semestar\IKP\IKPProjekat\IKP_Projekat\WinSockClient\Client.cpp(542,85): warning C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
-D:\7. semestar\IKP\IKPProjekat\IKP_Projekat\WinSockClient\Client.cpp(561,88): warning C4996: 'inet_addr': Use inet_pton() or InetPton() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+D:\7. semestar\IKP\IKPProjekat\IKP_Projekat\WinSockClient\Client.cpp(85,37): warning C4996: 'inet_addr': Use inet_pton() or InetPton() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+D:\7. semestar\IKP\IKPProjekat\IKP_Projekat\WinSockClient\Client.cpp(102,90): warning C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+D:\7. semestar\IKP\IKPProjekat\IKP_Projekat\WinSockClient\Client.cpp(213,5): warning C4996: 'itoa': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _itoa. See online help for details.
+D:\7. semestar\IKP\IKPProjekat\IKP_Projekat\WinSockClient\Client.cpp(185,10): warning C4101: 'recvbuf': unreferenced local variable
+D:\7. semestar\IKP\IKPProjekat\IKP_Projekat\WinSockClient\Client.cpp(454,13): warning C4996: 'scanf': This function or variable may be unsafe. Consider using scanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+D:\7. semestar\IKP\IKPProjekat\IKP_Projekat\WinSockClient\Client.cpp(466,9): warning C4996: 'scanf': This function or variable may be unsafe. Consider using scanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+D:\7. semestar\IKP\IKPProjekat\IKP_Projekat\WinSockClient\Client.cpp(590,85): warning C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+D:\7. semestar\IKP\IKPProjekat\IKP_Projekat\WinSockClient\Client.cpp(609,88): warning C4996: 'inet_addr': Use inet_pton() or InetPton() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
   WinSockClient.vcxproj -> D:\7. semestar\IKP\IKPProjekat\IKP_Projekat\Debug\WinSockClient.exe

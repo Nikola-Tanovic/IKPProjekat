@@ -1,34 +1,4 @@
-﻿  filePartDataList.cpp
-D:\7. semestar\IKP\IKPProjekat\IKP_Projekat\WinSockServer\filePartDataList.cpp(2,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
-D:\7. semestar\IKP\IKPProjekat\IKP_Projekat\WinSockServer\lists.h(2,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
-D:\7. semestar\IKP\IKPProjekat\IKP_Projekat\WinSockServer\structures.h(3,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
-D:\7. semestar\IKP\IKPProjekat\IKP_Projekat\WinSockServer\structures.h(4,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
-D:\7. semestar\IKP\IKPProjekat\IKP_Projekat\WinSockServer\structures.h(24,2): warning C4091: 'typedef ': ignored on left of 'request' when no variable is declared
-D:\7. semestar\IKP\IKPProjekat\IKP_Projekat\WinSockServer\structures.h(31,2): warning C4091: 'typedef ': ignored on left of 'filePartDataResponse' when no variable is declared
-D:\7. semestar\IKP\IKPProjekat\IKP_Projekat\WinSockServer\lists.h(3,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
-D:\7. semestar\IKP\IKPProjekat\IKP_Projekat\WinSockServer\filePartDataList.cpp(17,10): warning C4477: 'printf' : format string '%d' requires an argument of type 'int', but variadic argument 1 has type 'IN_ADDR'
-D:\7. semestar\IKP\IKPProjekat\IKP_Projekat\WinSockServer\filePartDataList.cpp(86,10): warning C4477: 'printf' : format string '%d' requires an argument of type 'int', but variadic argument 1 has type 'IN_ADDR'
-D:\7. semestar\IKP\IKPProjekat\IKP_Projekat\WinSockServer\filePartDataList.cpp(107,49): warning C4996: 'inet_addr': Use inet_pton() or InetPton() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
-D:\7. semestar\IKP\IKPProjekat\IKP_Projekat\WinSockServer\filePartDataList.cpp(120,52): warning C4996: 'inet_addr': Use inet_pton() or InetPton() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
-  hashMap.cpp
-D:\7. semestar\IKP\IKPProjekat\IKP_Projekat\WinSockServer\hashMap.cpp(1,13): warning C4081: expected 'newline'; found ';'
-D:\7. semestar\IKP\IKPProjekat\IKP_Projekat\WinSockServer\hashMap.cpp(2,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
-D:\7. semestar\IKP\IKPProjekat\IKP_Projekat\WinSockServer\hashMap.h(2,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
-D:\7. semestar\IKP\IKPProjekat\IKP_Projekat\WinSockServer\lists.h(2,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
-D:\7. semestar\IKP\IKPProjekat\IKP_Projekat\WinSockServer\structures.h(3,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
-D:\7. semestar\IKP\IKPProjekat\IKP_Projekat\WinSockServer\structures.h(4,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
-D:\7. semestar\IKP\IKPProjekat\IKP_Projekat\WinSockServer\structures.h(24,2): warning C4091: 'typedef ': ignored on left of 'request' when no variable is declared
-D:\7. semestar\IKP\IKPProjekat\IKP_Projekat\WinSockServer\structures.h(31,2): warning C4091: 'typedef ': ignored on left of 'filePartDataResponse' when no variable is declared
-D:\7. semestar\IKP\IKPProjekat\IKP_Projekat\WinSockServer\lists.h(3,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
-  hmElementList.cpp
-D:\7. semestar\IKP\IKPProjekat\IKP_Projekat\WinSockServer\hmElementList.cpp(1,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
-D:\7. semestar\IKP\IKPProjekat\IKP_Projekat\WinSockServer\lists.h(2,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
-D:\7. semestar\IKP\IKPProjekat\IKP_Projekat\WinSockServer\structures.h(3,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
-D:\7. semestar\IKP\IKPProjekat\IKP_Projekat\WinSockServer\structures.h(4,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
-D:\7. semestar\IKP\IKPProjekat\IKP_Projekat\WinSockServer\structures.h(24,2): warning C4091: 'typedef ': ignored on left of 'request' when no variable is declared
-D:\7. semestar\IKP\IKPProjekat\IKP_Projekat\WinSockServer\structures.h(31,2): warning C4091: 'typedef ': ignored on left of 'filePartDataResponse' when no variable is declared
-D:\7. semestar\IKP\IKPProjekat\IKP_Projekat\WinSockServer\lists.h(3,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
-  Server.cpp
+﻿  Server.cpp
 D:\7. semestar\IKP\IKPProjekat\IKP_Projekat\WinSockServer\Server.cpp(5,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
 D:\7. semestar\IKP\IKPProjekat\IKP_Projekat\WinSockServer\Server.cpp(6,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
 D:\7. semestar\IKP\IKPProjekat\IKP_Projekat\WinSockServer\Server.cpp(7,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
@@ -37,19 +7,15 @@ D:\7. semestar\IKP\IKPProjekat\IKP_Projekat\WinSockServer\lists.h(2,10): warning
 D:\7. semestar\IKP\IKPProjekat\IKP_Projekat\WinSockServer\structures.h(3,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
 D:\7. semestar\IKP\IKPProjekat\IKP_Projekat\WinSockServer\structures.h(4,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
 D:\7. semestar\IKP\IKPProjekat\IKP_Projekat\WinSockServer\structures.h(24,2): warning C4091: 'typedef ': ignored on left of 'request' when no variable is declared
-D:\7. semestar\IKP\IKPProjekat\IKP_Projekat\WinSockServer\structures.h(31,2): warning C4091: 'typedef ': ignored on left of 'filePartDataResponse' when no variable is declared
 D:\7. semestar\IKP\IKPProjekat\IKP_Projekat\WinSockServer\lists.h(3,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
-D:\7. semestar\IKP\IKPProjekat\IKP_Projekat\WinSockServer\Server.cpp(44,2): warning C4091: 'typedef ': ignored on left of 'errorResponse' when no variable is declared
-D:\7. semestar\IKP\IKPProjekat\IKP_Projekat\WinSockServer\Server.cpp(211,5): warning C4996: 'scanf': This function or variable may be unsafe. Consider using scanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-D:\7. semestar\IKP\IKPProjekat\IKP_Projekat\WinSockServer\Server.cpp(76,10): warning C4101: 'recvbuf': unreferenced local variable
-D:\7. semestar\IKP\IKPProjekat\IKP_Projekat\WinSockServer\Server.cpp(410,110): warning C4267: '+=': conversion from 'size_t' to 'short', possible loss of data
-D:\7. semestar\IKP\IKPProjekat\IKP_Projekat\WinSockServer\Server.cpp(569,43): warning C4244: 'argument': conversion from 'long' to 'u_short', possible loss of data
-D:\7. semestar\IKP\IKPProjekat\IKP_Projekat\WinSockServer\Server.cpp(343,56): warning C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
-D:\7. semestar\IKP\IKPProjekat\IKP_Projekat\WinSockServer\Server.cpp(421,79): warning C4996: 'inet_addr': Use inet_pton() or InetPton() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+D:\7. semestar\IKP\IKPProjekat\IKP_Projekat\WinSockServer\Server.cpp(42,2): warning C4091: 'typedef ': ignored on left of 'errorResponse' when no variable is declared
+D:\7. semestar\IKP\IKPProjekat\IKP_Projekat\WinSockServer\Server.cpp(209,5): warning C4996: 'scanf': This function or variable may be unsafe. Consider using scanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+D:\7. semestar\IKP\IKPProjekat\IKP_Projekat\WinSockServer\Server.cpp(74,10): warning C4101: 'recvbuf': unreferenced local variable
+D:\7. semestar\IKP\IKPProjekat\IKP_Projekat\WinSockServer\Server.cpp(408,111): warning C4267: '+=': conversion from 'size_t' to 'short', possible loss of data
+D:\7. semestar\IKP\IKPProjekat\IKP_Projekat\WinSockServer\Server.cpp(542,31): warning C4018: '<': signed/unsigned mismatch
+D:\7. semestar\IKP\IKPProjekat\IKP_Projekat\WinSockServer\Server.cpp(639,43): warning C4244: 'argument': conversion from 'long' to 'u_short', possible loss of data
+D:\7. semestar\IKP\IKPProjekat\IKP_Projekat\WinSockServer\Server.cpp(341,56): warning C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+D:\7. semestar\IKP\IKPProjekat\IKP_Projekat\WinSockServer\Server.cpp(419,79): warning C4996: 'inet_addr': Use inet_pton() or InetPton() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
 D:\7. semestar\IKP\IKPProjekat\IKP_Projekat\WinSockServer\Server.cpp(456,74): warning C4996: 'inet_addr': Use inet_pton() or InetPton() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
-D:\7. semestar\IKP\IKPProjekat\IKP_Projekat\WinSockServer\Server.cpp(515,83): warning C4996: 'inet_addr': Use inet_pton() or InetPton() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
-  threadList.cpp
-D:\7. semestar\IKP\IKPProjekat\IKP_Projekat\WinSockServer\threadList.cpp(1,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
-D:\7. semestar\IKP\IKPProjekat\IKP_Projekat\WinSockServer\threadList.cpp(102,14): warning C4101: 'prev': unreferenced local variable
-  Generating Code...
+D:\7. semestar\IKP\IKPProjekat\IKP_Projekat\WinSockServer\Server.cpp(525,83): warning C4996: 'inet_addr': Use inet_pton() or InetPton() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
   WinSockServer.vcxproj -> D:\7. semestar\IKP\IKPProjekat\IKP_Projekat\Debug\WinSockServer.exe

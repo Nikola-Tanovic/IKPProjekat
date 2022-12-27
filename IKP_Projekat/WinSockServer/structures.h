@@ -25,13 +25,21 @@ typedef struct request {
 
 typedef struct filePartDataResponse {
 	sockaddr_in ipClientSocket; 	//there is port
-	char* filePartAddress;
 	int filePartSize;
 	int relativeAddress;
-};
+	char* filePartAddress;
+}filePartDataResponse;
 
 typedef struct fileDataResponse {
 	short responseSize;
 	long partsCount;
 	filePartDataResponse* filePartData; //niz fajlPartData
 }fileDataResponse;
+
+typedef struct fileDataResponseSerialized {
+	short responseSize;
+	long partsCount;
+	char* filePartData;
+}fileDataResponseSerialized;
+
+

@@ -17,6 +17,7 @@ typedef struct listenThreadParameters {
     CRITICAL_SECTION bufferCS;
     CRITICAL_SECTION printCS;
     char* clientBuff;
+    int* exitFlag;
 }listenThreadParameters;
 
 typedef struct serverThreadParameters {
@@ -25,6 +26,7 @@ typedef struct serverThreadParameters {
     char* clientBuffer;
     CRITICAL_SECTION bufferCS;
     CRITICAL_SECTION printCS;
+    int* exitFlag;
 }serverThreadParameters;
 
 
@@ -44,6 +46,7 @@ int __cdecl main(int argc, char** argv)
 
     char* recvBuff = (char*)malloc(DEFAULT_BUFLEN);
     
+    int exitFlag = 0;
 
     int result = 0;
 
@@ -120,6 +123,7 @@ int __cdecl main(int argc, char** argv)
     ltParams->printCS = printCS;
     ltParams->clientPort = clientPort + 1;
     ltParams->clientBuff = clientBuffer;
+    ltParams->exitFlag = &exitFlag;
 
     DWORD listenThreadID;
     HANDLE listenThread = CreateThread(NULL, 0, &listenThreadFunction, ltParams, 0, &listenThreadID);
@@ -129,11 +133,30 @@ int __cdecl main(int argc, char** argv)
     stParams->printCS = printCS;
     stParams->clientBuffer = clientBuffer;
     stParams->serverConnectSocket = serverConnectSocket;
+    stParams->exitFlag = &exitFlag;
 
     DWORD serverThreadID;
     HANDLE serverThread = CreateThread(NULL, 0, &serverThreadFunction, stParams, 0, &serverThreadID);
 
+    HANDLE handles[2];
+    handles[0] = listenThread;
+    handles[1] = serverThread;
 
+    while (1) {
+        if (exitFlag == -2) {
+            while (!WaitForMultipleObjects(2, handles, TRUE, INFINITE)) {
+
+            }
+
+            CloseHandle(handles[0]);
+            CloseHandle(handles[1]);
+            return 0;
+        }
+        else {
+            Sleep(200);
+        }
+    }
+    return 0;
 }
 
 bool InitializeWindowsSockets()
@@ -315,7 +338,7 @@ DWORD WINAPI listenThreadFunction(LPVOID lpParam)
 
         FD_CLR(acceptedSocket, &readfds);
 
-    } while (1);
+    } while (*ltParams->exitFlag != -2);
 
     // shutdown the connection since we're done
     iResult = shutdown(acceptedSocket, SD_SEND);
@@ -343,7 +366,7 @@ DWORD WINAPI serverThreadFunction(LPVOID lpParam) {
 
     int result = 0;
 
-    char* recvBuff = (char*)malloc(DEFAULT_BUFLEN);
+    char* recvBuff = (char*)malloc(sizeof(char) * DEFAULT_BUFLEN);
 
 
     // message to send
@@ -429,9 +452,14 @@ DWORD WINAPI serverThreadFunction(LPVOID lpParam) {
         do {
             printf("Unesite id fajla koji zelite: ");
             scanf("%ld", &fileId);
+           
             requestMessage.fileId = htonl(fileId);
-        } while (fileId >= initialServerResponse || fileId < 0);
+        } while ((fileId >= initialServerResponse || fileId < 0) && fileId != -2 );
 
+        if (fileId == -2) {
+            *stParams->exitFlag = -2;
+            break;
+        }
 
         long bufferSize = -1;
         printf("\nUnesite velicinu fajla koju zelite da smestite kod sebe: ");
@@ -457,12 +485,13 @@ DWORD WINAPI serverThreadFunction(LPVOID lpParam) {
         FD_CLR(stParams->serverConnectSocket, &writefds);
 
         fileDataResponse* serverResponse = (fileDataResponse*)malloc(sizeof(fileDataResponse));
+        //fileDataResponseSerialized* serverResponseSerialized = (fileDataResponseSerialized*)malloc(sizeof(fileDataResponseSerialized));
         //short recievedBytes = 0;
 
         int recievedBytes = 0;
         int responseSizeRecieved = 0;
+        //short* responseSizeP ;
         short responseSize = 1;
-
         do {
             FD_ZERO(&readfds);
             FD_SET(stParams->serverConnectSocket, &readfds);
@@ -484,8 +513,9 @@ DWORD WINAPI serverThreadFunction(LPVOID lpParam) {
             if (iResult > 0) {
                 if (responseSizeRecieved == 0) {
                     //recvBuff[iResult] = '\0';
-                    responseSize = ntohs(((fileDataResponse*)recvBuff)->responseSize);
-                    responseSizeRecieved = 1;
+                    responseSize = *((short*)recvBuff);
+                    responseSize = ntohs(responseSize);
+                    recvBuff += sizeof(short);        
                 }
 
                 FD_CLR(stParams->serverConnectSocket, &readfds);
@@ -517,23 +547,41 @@ DWORD WINAPI serverThreadFunction(LPVOID lpParam) {
 
         if (responseSize == recievedBytes) {
 
-            serverResponse = (fileDataResponse*)recvBuff;
-            serverResponse->responseSize = ntohs(serverResponse->responseSize);
+            //serverResponseSerialized = (fileDataResponseSerialized*)recvBuff;
+            serverResponse->responseSize = responseSize;
+ 
+            serverResponse->partsCount = *((long*)recvBuff);
+            recvBuff += sizeof(long);
             serverResponse->partsCount = ntohl(serverResponse->partsCount);
             EnterCriticalSection(&stParams->printCS);
             printf("\nResponse size: %d", serverResponse->responseSize);
             printf("\nPart count: %d", serverResponse->partsCount);
             LeaveCriticalSection(&stParams->printCS);
+            filePartDataResponse* savedAddress = NULL;
 
             for (int i = 0; i < serverResponse->partsCount; i++) {
                 serverResponse->filePartData += i * sizeof(filePartDataResponse);
                 serverResponse->filePartData = (filePartDataResponse*)malloc(1 * sizeof(filePartDataResponse));
-                serverResponse->filePartData[i].filePartSize = ntohl(serverResponse->filePartData[i].filePartSize);
+                if (i == 0)
+                {
+                    savedAddress = serverResponse->filePartData;
+                }
 
+                memcpy(&serverResponse->filePartData[i].ipClientSocket, recvBuff, sizeof(sockaddr_in));
+                recvBuff += sizeof(sockaddr_in);
+
+                memcpy(&serverResponse->filePartData[i].filePartSize, recvBuff, sizeof(int));
+                serverResponse->filePartData[i].filePartSize = ntohl(serverResponse->filePartData[i].filePartSize);
+                recvBuff += sizeof(int);
+
+                memcpy(&serverResponse->filePartData[i].relativeAddress, recvBuff, sizeof(int));
+                serverResponse->filePartData[i].relativeAddress = ntohl(serverResponse->filePartData[i].relativeAddress);
+                recvBuff += sizeof(int);
 
                 serverResponse->filePartData[i].filePartAddress = (char*)malloc(serverResponse->filePartData[i].filePartSize * sizeof(char));
+                memcpy(serverResponse->filePartData[i].filePartAddress, recvBuff, serverResponse->filePartData[i].filePartSize);
+                recvBuff += serverResponse->filePartData[i].filePartSize;
 
-                serverResponse->filePartData[i].relativeAddress = ntohl(serverResponse->filePartData[i].relativeAddress);
                 serverResponse->filePartData[i].ipClientSocket.sin_port = ntohs(serverResponse->filePartData[i].ipClientSocket.sin_port);
 
                 EnterCriticalSection(&stParams->printCS);
@@ -541,12 +589,12 @@ DWORD WINAPI serverThreadFunction(LPVOID lpParam) {
                 printf("\nRelative address[%d]: %ld", i, serverResponse->filePartData[i].relativeAddress);
                 printf("\nIP Address of client that we need to connect[%d]: %s", i, inet_ntoa(serverResponse->filePartData[i].ipClientSocket.sin_addr));
                 printf("\nPort of client that we need to connect[%d]: %d", i, serverResponse->filePartData[i].ipClientSocket.sin_port);
-                printf("\nPart of message [%d]: %s", serverResponse->filePartData[i].filePartAddress);
+                printf("\nPart of message [%d]: %s", i, serverResponse->filePartData[i].filePartAddress);
                 LeaveCriticalSection(&stParams->printCS);
 
             }
 
-
+            serverResponse->filePartData = savedAddress;
 
         }
 
