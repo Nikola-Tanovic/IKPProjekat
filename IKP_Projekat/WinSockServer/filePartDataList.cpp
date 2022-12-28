@@ -138,4 +138,21 @@ int filePartDataCount(filePartData* head) {
 	return count;
 }
 
+void deleteLastFilePartData(filePartData* head) {
+	filePartData* temp = head;
+	filePartData* prev;
+	//trazimo threadNode koji je pretposlednji
+	while (temp->nextPart->nextPart != NULL) {
+		temp = temp->nextPart;
+	}
+
+	//posle ovog loop-a, u tempu nam se nalazi pretposlednji threadNode, sto znaci da je temp->next poslednji
+	//i mi taj poslednji nod stavimo u neku promenjivu, temp->next postavimo na NULL, pa on sad postaje zadnji threadNode
+	filePartData* filePartDataToDelete = temp->nextPart;
+	temp->nextPart = NULL;
+
+	//threadNode koji smo obrisali moramo da mu oslobodimo memoriju
+	free(filePartDataToDelete);
+}
+
 

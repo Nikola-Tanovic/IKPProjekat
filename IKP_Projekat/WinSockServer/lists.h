@@ -43,6 +43,8 @@ int updateFilePartData(filePartData** head, sockaddr_in ipClientSocket);
 
 int filePartDataCount(filePartData* head);
 
+void deleteLastFilePartData(filePartData* head);
+
 //brisanje prvog elementa liste
 //prosledi se head, 
 //filePartData* deleteFirstFilePartData(filePartData* head);

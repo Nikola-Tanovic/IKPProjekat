@@ -514,7 +514,7 @@ DWORD WINAPI serverThreadFunction(LPVOID lpParam) {
                 if (responseSizeRecieved == 0) {
                     //recvBuff[iResult] = '\0';
                     responseSize = *((short*)recvBuff);
-                    responseSize = ntohs(responseSize);
+                    //responseSize = ntohs(responseSize);
                     recvBuff += sizeof(short);        
                 }
 
@@ -552,16 +552,18 @@ DWORD WINAPI serverThreadFunction(LPVOID lpParam) {
  
             serverResponse->partsCount = *((long*)recvBuff);
             recvBuff += sizeof(long);
-            serverResponse->partsCount = ntohl(serverResponse->partsCount);
+            //serverResponse->partsCount = ntohl(serverResponse->partsCount);
             EnterCriticalSection(&stParams->printCS);
             printf("\nResponse size: %d", serverResponse->responseSize);
             printf("\nPart count: %d", serverResponse->partsCount);
             LeaveCriticalSection(&stParams->printCS);
             filePartDataResponse* savedAddress = NULL;
 
+            serverResponse->filePartData = (filePartDataResponse*)malloc(sizeof(filePartDataResponse) * serverResponse->partsCount);
+
             for (int i = 0; i < serverResponse->partsCount; i++) {
-                serverResponse->filePartData += i * sizeof(filePartDataResponse);
-                serverResponse->filePartData = (filePartDataResponse*)malloc(1 * sizeof(filePartDataResponse));
+                //serverResponse->filePartData += i * sizeof(filePartDataResponse);
+                //serverResponse->filePartData = (filePartDataResponse*)malloc(1 * sizeof(filePartDataResponse));
                 if (i == 0)
                 {
                     savedAddress = serverResponse->filePartData;
@@ -741,10 +743,11 @@ DWORD WINAPI serverThreadFunction(LPVOID lpParam) {
 
         printf("\nCelokupna poruka: %s", printBuffer);
 
+        /*
         free(serverResponse);
         free(startPrintBuffer);
         free(printBuffer);
-
+        */
 
     }
     // cleanup
