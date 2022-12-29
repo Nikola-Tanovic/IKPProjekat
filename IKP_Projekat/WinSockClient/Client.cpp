@@ -218,7 +218,7 @@ DWORD WINAPI listenThreadFunction(LPVOID lpParam)
     if (iResult != 0)
     {
         EnterCriticalSection(&ltParams->printCS);
-        printf("getaddrinfo failed with error: %d\n", iResult);
+        printf("(listenThread)getaddrinfo failed with error: %d\n", iResult);
         LeaveCriticalSection(&ltParams->printCS);
         WSACleanup();
         return 1;
@@ -232,7 +232,7 @@ DWORD WINAPI listenThreadFunction(LPVOID lpParam)
     if (listenSocket == INVALID_SOCKET)
     {
         EnterCriticalSection(&ltParams->printCS);
-        printf("socket failed with error: %ld\n", WSAGetLastError());
+        printf("(listenThread)socket failed with error: %ld\n", WSAGetLastError());
         LeaveCriticalSection(&ltParams->printCS);
         freeaddrinfo(resultingAddress);
         WSACleanup();
@@ -245,7 +245,7 @@ DWORD WINAPI listenThreadFunction(LPVOID lpParam)
     if (iResult == SOCKET_ERROR)
     {
         EnterCriticalSection(&ltParams->printCS);
-        printf("bind failed with error: %d\n", WSAGetLastError());
+        printf("(listenThread)bind failed with error: %d\n", WSAGetLastError());
         LeaveCriticalSection(&ltParams->printCS);
         freeaddrinfo(resultingAddress);
         closesocket(listenSocket);
@@ -261,7 +261,7 @@ DWORD WINAPI listenThreadFunction(LPVOID lpParam)
     if (iResult == SOCKET_ERROR)
     {
         EnterCriticalSection(&ltParams->printCS);
-        printf("listen failed with error: %d\n", WSAGetLastError());
+        printf("(listenThread)listen failed with error: %d\n", WSAGetLastError());
         LeaveCriticalSection(&ltParams->printCS);
         closesocket(listenSocket);
         WSACleanup();
@@ -269,14 +269,15 @@ DWORD WINAPI listenThreadFunction(LPVOID lpParam)
     }
 
     EnterCriticalSection(&ltParams->printCS);
-    printf("Listen client socket initialized, waiting for other clients.\n");
+    printf("(listenThread)Listen client socket initialized, waiting for other clients.\n");
+    printf("(listenThread)Listen socket port: %hu", ltParams->clientPort);
     LeaveCriticalSection(&ltParams->printCS);
 
     iResult = ioctlsocket(listenSocket, FIONBIO, &mode);
     if (iResult != NO_ERROR) {
         EnterCriticalSection(&ltParams->printCS);
-        printf("ioctlsocket failed with error: %ld\n", iResult);
-        printf("accept failed with error: %d\n", WSAGetLastError());
+        printf("(listenThread)ioctlsocket failed with error: %ld\n", iResult);
+        printf("(listenThread) failed with error: %d\n", WSAGetLastError());
         LeaveCriticalSection(&ltParams->printCS);
     }
     fd_set readfds;
@@ -299,7 +300,7 @@ DWORD WINAPI listenThreadFunction(LPVOID lpParam)
         else if (result == SOCKET_ERROR) {
             // connection was closed gracefully
             EnterCriticalSection(&ltParams->printCS);
-            printf("Connection with client closed.\n");
+            printf("(listenThread)Connection with client closed.\n");
             LeaveCriticalSection(&ltParams->printCS);
             closesocket(acceptedSocket);
             break;
@@ -314,7 +315,7 @@ DWORD WINAPI listenThreadFunction(LPVOID lpParam)
         if (acceptedSocket == INVALID_SOCKET)
         {
             EnterCriticalSection(&ltParams->printCS);
-            printf("accept failed with error: %d\n", WSAGetLastError());
+            printf("(listenThread)accept failed with error: %d\n", WSAGetLastError());
             LeaveCriticalSection(&ltParams->printCS);
             closesocket(listenSocket);
             WSACleanup();
@@ -328,13 +329,13 @@ DWORD WINAPI listenThreadFunction(LPVOID lpParam)
         iResult = send(acceptedSocket, messageToSend, (int)strlen(messageToSend) + 1, 0);
         if (iResult == SOCKET_ERROR)
         {
-            printf("send failed with error: %d\n", WSAGetLastError());
+            printf("(listenThread)send failed with error: %d\n", WSAGetLastError());
             closesocket(acceptedSocket);
             WSACleanup();
             return 1;
         }
 
-        printf("Bytes Sent: %ld\n", iResult);
+        printf("(listenThread)Bytes Sent: %ld\n", iResult);
 
         FD_CLR(acceptedSocket, &readfds);
 
@@ -344,7 +345,7 @@ DWORD WINAPI listenThreadFunction(LPVOID lpParam)
     iResult = shutdown(acceptedSocket, SD_SEND);
     if (iResult == SOCKET_ERROR)
     {
-        printf("shutdown failed with error: %d\n", WSAGetLastError());
+        printf("(listenThread)shutdown failed with error: %d\n", WSAGetLastError());
         closesocket(acceptedSocket);
         WSACleanup();
         return 1;
@@ -400,7 +401,7 @@ DWORD WINAPI serverThreadFunction(LPVOID lpParam) {
             continue;
         }
         else if (result == SOCKET_ERROR) {
-            printf("Connection with server closed.\n");
+            printf("(serverThread)Connection with server closed.\n");
             closesocket(stParams->serverConnectSocket);
             break;
         }
@@ -408,21 +409,21 @@ DWORD WINAPI serverThreadFunction(LPVOID lpParam) {
         iResult = recv(stParams->serverConnectSocket, (char*)&initialServerResponse, DEFAULT_BUFLEN, 0);
         if (iResult > 0) {
             initialServerResponse = ntohl((long)initialServerResponse);
-            printf("Broj fajlova raspolozivih na serveru je: %ld\n", initialServerResponse);
+            printf("(serverThread)Broj fajlova raspolozivih na serveru je: %ld\n", initialServerResponse);
             break;
         }
         else if (iResult == 0)
         {
             // connection was closed gracefully
             //da li je ovde klijent gracefully zatvorio i kada se ulazi u ovaj deo koda
-            printf("Connection with client closed.\n");
+            printf("(serverThread)Connection with client closed.\n");
             closesocket(stParams->serverConnectSocket);
             break;
         }
         else
         {
             // there was an error during recv
-            printf("recv failed with error: %d\n", WSAGetLastError());
+            printf("(serverThread)recv failed with error: %d\n", WSAGetLastError());
             closesocket(stParams->serverConnectSocket);
             break;
         }
@@ -437,13 +438,13 @@ DWORD WINAPI serverThreadFunction(LPVOID lpParam) {
         result = select(0, NULL, &writefds, NULL, &timeVal);
 
         if (result == 0) {
-            printf("Vreme za cekanje je isteklo (select pre send funkcije - Klijent )\n");
+            printf("(serverThread)Vreme za cekanje je isteklo (select pre send funkcije - Klijent )\n");
             Sleep(1000);
             continue;
         }
         else if (result == SOCKET_ERROR) {
             // connection was closed gracefully
-            printf("Connection with client closed.\n");
+            printf("(serverThread)Connection with client closed.\n");
             closesocket(stParams->serverConnectSocket);
             break;
         }
@@ -466,7 +467,9 @@ DWORD WINAPI serverThreadFunction(LPVOID lpParam) {
         scanf("%ld", &bufferSize);
         requestMessage.bufferSize = htonl(bufferSize);
 
+        EnterCriticalSection(&stParams->bufferCS);
         stParams->clientBuffer = (char*)malloc(sizeof(char) * bufferSize);
+        LeaveCriticalSection(&stParams->bufferCS);
 
 
         // send koji salje zahtev serveru gde se navodi idFile i velicina dela fajla koji klijent cuva kod sebe
@@ -474,13 +477,13 @@ DWORD WINAPI serverThreadFunction(LPVOID lpParam) {
 
         if (iResult == SOCKET_ERROR)
         {
-            printf("send failed with error: %d\n", WSAGetLastError());
+            printf("(serverThread)send failed with error: %d\n", WSAGetLastError());
             closesocket(stParams->serverConnectSocket);
             WSACleanup();
             return 1;
         }
 
-        printf("Bytes Sent: %ld\n", iResult);
+        printf("(serverThread)Bytes Sent: %ld\n", iResult);
 
         FD_CLR(stParams->serverConnectSocket, &writefds);
 
@@ -503,7 +506,7 @@ DWORD WINAPI serverThreadFunction(LPVOID lpParam) {
                 continue;
             }
             else if (result == SOCKET_ERROR) {
-                printf("Connection with server closed.\n");
+                printf("(serverThread)Connection with server closed.\n");
                 closesocket(stParams->serverConnectSocket);
                 break;
             }
@@ -525,14 +528,14 @@ DWORD WINAPI serverThreadFunction(LPVOID lpParam) {
             {
                 // connection was closed gracefully
                 //da li je ovde klijent gracefully zatvorio i kada se ulazi u ovaj deo koda
-                printf("Connection with client closed.\n");
+                printf("(serverThread)Connection with client closed.\n");
                 closesocket(stParams->serverConnectSocket);
                 break;
             }
             else
             {
                 // there was an error during recv
-                printf("recv failed with error: %d\n", WSAGetLastError());
+                printf("(serverThread)recv failed with error: %d\n", WSAGetLastError());
                 closesocket(stParams->serverConnectSocket);
                 break;
             }
@@ -582,6 +585,8 @@ DWORD WINAPI serverThreadFunction(LPVOID lpParam) {
 
                 serverResponse->filePartData[i].filePartAddress = (char*)malloc(serverResponse->filePartData[i].filePartSize * sizeof(char));
                 memcpy(serverResponse->filePartData[i].filePartAddress, recvBuff, serverResponse->filePartData[i].filePartSize);
+                //ovde treba da se stavi null terminator
+                serverResponse->filePartData[i].filePartAddress[serverResponse->filePartData[i].filePartSize] = '\0';
                 recvBuff += serverResponse->filePartData[i].filePartSize;
 
                 serverResponse->filePartData[i].ipClientSocket.sin_port = ntohs(serverResponse->filePartData[i].ipClientSocket.sin_port);
@@ -592,6 +597,7 @@ DWORD WINAPI serverThreadFunction(LPVOID lpParam) {
                 printf("\nIP Address of client that we need to connect[%d]: %s", i, inet_ntoa(serverResponse->filePartData[i].ipClientSocket.sin_addr));
                 printf("\nPort of client that we need to connect[%d]: %d", i, serverResponse->filePartData[i].ipClientSocket.sin_port);
                 printf("\nPart of message [%d]: %s", i, serverResponse->filePartData[i].filePartAddress);
+                printf("\n");
                 LeaveCriticalSection(&stParams->printCS);
 
             }
@@ -599,12 +605,20 @@ DWORD WINAPI serverThreadFunction(LPVOID lpParam) {
             serverResponse->filePartData = savedAddress;
 
         }
-
+        //u print buffer pisemo celokupnu poruku
         char* printBuffer = NULL;
         int clientBufferFull = 0;
         int numberOfWrittenBytes = 0;
         char* startPrintBuffer = NULL;
         int startPrintBufferFlag = 0;
+
+        //zauzimamo memoriju za ispis celog fajla
+        int completeFileSize = 0;
+        for (int i = 0; i < serverResponse->partsCount; i++) {
+            completeFileSize += serverResponse->filePartData[i].filePartSize;
+        }
+
+        printBuffer = (char*)malloc(sizeof(char) * completeFileSize);
 
         for (int i = 0; i < serverResponse->partsCount; i++) {
             if (serverResponse->filePartData[i].ipClientSocket.sin_port == 0 &&
@@ -613,11 +627,11 @@ DWORD WINAPI serverThreadFunction(LPVOID lpParam) {
                 //u ovom delu koda stavljamo onaj deo fajla koji se cuva kod klijenta
                 if (!clientBufferFull) {
                     //proveravamo da li je deo fajla veci ili jednak od velicine bafera
-                    if (serverResponse->filePartData[i].filePartSize - bufferSize >= 0) {
+                    if (serverResponse->filePartData[i].filePartSize - (bufferSize - numberOfWrittenBytes) >= 0) {
                         EnterCriticalSection(&stParams->bufferCS);
-                        memcpy(stParams->clientBuffer + numberOfWrittenBytes, serverResponse->filePartData[i].filePartAddress, bufferSize);
+                        memcpy(stParams->clientBuffer + numberOfWrittenBytes, serverResponse->filePartData[i].filePartAddress, bufferSize - numberOfWrittenBytes);
                         LeaveCriticalSection(&stParams->bufferCS);
-                        numberOfWrittenBytes += bufferSize;
+                        numberOfWrittenBytes += (bufferSize - numberOfWrittenBytes);
                         clientBufferFull = 1;
                     }
                     else {
@@ -629,14 +643,13 @@ DWORD WINAPI serverThreadFunction(LPVOID lpParam) {
                     }
                 }
 
-                printBuffer = (char*)malloc(sizeof(char) * serverResponse->filePartData[i].filePartSize);
                 if (!startPrintBufferFlag) {
                     startPrintBuffer = printBuffer;
                     startPrintBufferFlag = 1;
                 }
 
+                //upisujemo u buffer za ispis celog fajla
                 memcpy(printBuffer, serverResponse->filePartData[i].filePartAddress, serverResponse->filePartData[i].filePartSize);
-
                 printBuffer += serverResponse->filePartData[i].filePartSize;
             }
             else {
@@ -648,7 +661,9 @@ DWORD WINAPI serverThreadFunction(LPVOID lpParam) {
 
                 if (clientConnectSocket == INVALID_SOCKET)
                 {
-                    printf("socket failed with error: %ld\n", WSAGetLastError());
+                    EnterCriticalSection(&stParams->printCS);
+                    printf("(serverThread)socket failed with error: %ld\n", WSAGetLastError());
+                    LeaveCriticalSection(&stParams->printCS);
                     WSACleanup();
                     return 1;
                 }
@@ -656,12 +671,18 @@ DWORD WINAPI serverThreadFunction(LPVOID lpParam) {
                 // create and initialize address structure
                 sockaddr_in clientAddress;
                 clientAddress.sin_family = AF_INET;
-                clientAddress.sin_addr.s_addr = serverResponse->filePartData[i].ipClientSocket.sin_addr.s_addr;
-                clientAddress.sin_port = htons(serverResponse->filePartData[i].ipClientSocket.sin_port);
+                const char* buff = inet_ntoa(serverResponse->filePartData[i].ipClientSocket.sin_addr);
+
+                clientAddress.sin_addr.s_addr = inet_addr(buff);
+                clientAddress.sin_port = htons(serverResponse->filePartData[i].ipClientSocket.sin_port + 1);
+
                 // connect to server specified in serverAddress and socket serverConnectSocket
                 if (connect(clientConnectSocket, (SOCKADDR*)&clientAddress, sizeof(clientAddress)) == SOCKET_ERROR)
                 {
-                    printf("Unable to connect to server.\n");
+                    EnterCriticalSection(&stParams->printCS);
+                    printf("\nError: %d", WSAGetLastError());
+                    printf("(serverThread)Unable to connect to server.\n");
+                    LeaveCriticalSection(&stParams->printCS);
                     closesocket(clientConnectSocket);
                     WSACleanup();
                 }
@@ -670,7 +691,7 @@ DWORD WINAPI serverThreadFunction(LPVOID lpParam) {
                 unsigned long mode = 1; //non-blocking mode
                 iResult = ioctlsocket(clientConnectSocket, FIONBIO, &mode);
                 if (iResult != NO_ERROR)
-                    printf("ioctlsocket failed with error: %ld\n", iResult);
+                    printf("(serverThread)ioctlsocket failed with error: %ld\n", iResult);
 
                 fd_set readfds;
 
@@ -688,13 +709,13 @@ DWORD WINAPI serverThreadFunction(LPVOID lpParam) {
                     result = select(0, &readfds, NULL, NULL, &timeVal);
 
                     if (result == 0) {
-                        printf("Vreme za cekanje je isteklo (select pre recviver funkcije)\n");
-                        Sleep(1000);
+                        //printf("Vreme za cekanje je isteklo (select pre recviver funkcije)\n");
+                        //Sleep(1000);
                         continue;
                     }
                     else if (result == SOCKET_ERROR) {
                         // connection was closed gracefully
-                        printf("Connection with client closed.\n");
+                        printf("(serverThread)Connection with client closed.\n");
                         closesocket(clientConnectSocket);
                         break;
                     }
@@ -704,9 +725,8 @@ DWORD WINAPI serverThreadFunction(LPVOID lpParam) {
 
                     if (iResult > 0)
                     {
-                        printf("Message received from client: %s.\n", recvBuff);
+                        printf("(serverThread)Message received from client: %s.\n", recvBuff);
 
-                        printBuffer = (char*)malloc(sizeof(char) * serverResponse->filePartData[i].filePartSize);
                         if (!startPrintBufferFlag) {
                             startPrintBuffer = printBuffer;
                             startPrintBufferFlag = 1;
@@ -722,14 +742,14 @@ DWORD WINAPI serverThreadFunction(LPVOID lpParam) {
                     else if (iResult == 0)
                     {
                         // connection was closed gracefully
-                        printf("Connection with client closed.\n");
+                        printf("(serverThread)Connection with client closed.\n");
                         closesocket(clientConnectSocket);
                         break;
                     }
                     else
                     {
                         // there was an error during recv
-                        printf("recv failed with error: %d\n", WSAGetLastError());
+                        printf("(serverThread)recv failed with error: %d\n", WSAGetLastError());
                         closesocket(clientConnectSocket);
                         break;
                     }

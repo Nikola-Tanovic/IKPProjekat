@@ -426,6 +426,8 @@ DWORD WINAPI clientThreadFunction(LPVOID lpParam) {
                 printf("\nFajl: %s", response->filePartData->filePartAddress);
                 LeaveCriticalSection(&(tParameters->printCS));
                 response->partsCount = 1;
+
+                //cuvamo ukupnu duzinu svih delova fajlova koji se ne nalaze ni na jednom klijnetu vec ih server salje
                 summedFilePartSize += (strlen(*(fileData->completeFile)) + 1);
                 
             }
@@ -543,6 +545,7 @@ DWORD WINAPI clientThreadFunction(LPVOID lpParam) {
                     response->filePartData[i].filePartAddress = (char*)malloc(sizeOfTheLastPart * sizeof(char));
                     response->responseSize += sizeOfTheLastPart * sizeof(char);
                     memcpy(response->filePartData[i].filePartAddress, lastPartAddress, sizeOfTheLastPart);
+                    
 
                     response->partsCount += 1;
                     response->filePartData[i].filePartSize = htonl(sizeOfTheLastPart);
@@ -567,7 +570,7 @@ DWORD WINAPI clientThreadFunction(LPVOID lpParam) {
             serializedResponse->responseSize = response->responseSize;
             serializedResponse->partsCount = response->partsCount;
             int sizeOfSerializedFilePartData = ntohl(response->partsCount) * (sizeof(sockaddr_in) + 2 * sizeof(int)) +
-                (sizeof(char*) * filePartOnClientCounter) + summedFilePartSize * sizeof(char);
+                (sizeof(char*) * filePartOnClientCounter) + summedFilePartSize * sizeof(char) + 6;
             serializedResponse->filePartData = (char*)malloc(sizeOfSerializedFilePartData);
             char* savedAddress = NULL;
             
@@ -627,15 +630,16 @@ DWORD WINAPI clientThreadFunction(LPVOID lpParam) {
             serializedResponse->filePartData = savedAddress;
             short finalResponseSize = sizeof(char) * (sizeOfSerializedFilePartData + sizeof(long) + sizeof(short));
             long finalPartsCount = ntohl(serializedResponse->partsCount);
-            char* valueResponseSerialized = (char*)malloc(finalResponseSize);
+            char* valueResponseSerialized = (char*)malloc(sizeof(char) * finalResponseSize);
             savedAddress = valueResponseSerialized;
             //strcat(valueResponseSerialized, itoa(serializedResponse->responseSize, buff, 10));
             memcpy(valueResponseSerialized, &finalResponseSize, sizeof(short));
             valueResponseSerialized += sizeof(short);
             memcpy(valueResponseSerialized, &finalPartsCount, sizeof(long));
             valueResponseSerialized += sizeof(long);
-            memcpy(valueResponseSerialized, serializedResponse->filePartData, sizeOfSerializedFilePartData + 6);
+            memcpy(valueResponseSerialized, serializedResponse->filePartData, sizeOfSerializedFilePartData);
             valueResponseSerialized = savedAddress;
+            //valueResponseSerialized[finalResponseSize] = '\0';
 
             int sentBytes = 0;
             do {                                                                         //ntohs
@@ -673,11 +677,11 @@ DWORD WINAPI clientThreadFunction(LPVOID lpParam) {
                 //korisnik je skinuo sad neki novi fajl pa moramo da ga izbrisemo iz evidencije za prethodni fajl
                 if (lastRequestedFileId != -1) {
                     EnterCriticalSection(&tParameters->hashMapCS);
-                    hashValue* fileDataPointer = hmSearch(tParameters->hashMap, (int)clientRequest->fileId);
+                    hashValue* fileDataPointer = hmSearch(tParameters->hashMap, (int)lastRequestedFileId);
                     //hashValue fileData = *fileDataPointer;
                     deleteFilePartDataLogical(&(fileDataPointer->filePartDataList), tParameters->clientAddr);
                     LeaveCriticalSection(&tParameters->hashMapCS);
-                }        
+                }     
             }
             
             lastRequestedFileId = clientRequest->fileId;
