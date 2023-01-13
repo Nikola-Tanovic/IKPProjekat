@@ -587,18 +587,6 @@ DWORD WINAPI clientThreadFunction(LPVOID lpParam) {
                 {
                     savedAddress = serializedResponse->filePartData;
                 }
-
-                /*
-                char* buff = (char*)malloc(sizeof(char) * 8); 
-                serializedResponse->filePartData[0] = '\0';
-                strcat(serializedResponse->filePartData, itoa(response->filePartData[i].ipClientSocket.sin_addr.S_un.S_addr, buff, 10));
-                strcat(serializedResponse->filePartData, itoa(response->filePartData[i].ipClientSocket.sin_port, buff, 10));
-                strcat(serializedResponse->filePartData, itoa(response->filePartData[i].filePartSize, buff, 10));
-                strcat(serializedResponse->filePartData, itoa(response->filePartData[i].relativeAddress, buff, 10));
-                strcat(serializedResponse->filePartData, response->filePartData[i].filePartAddress);
-              
-                //free(buff);
-                */
                 
                 
                 memcpy(serializedResponse->filePartData, &(response->filePartData[i].ipClientSocket), sizeof(sockaddr_in));
@@ -687,14 +675,14 @@ DWORD WINAPI clientThreadFunction(LPVOID lpParam) {
             lastRequestedFileId = clientRequest->fileId;
             int partCount = ntohs(response->partsCount);
             //ntohs
-            /*
+            
             free(response->filePartData);
             free(response);
 
             //free serialized response
             free(serializedResponse->filePartData);
             free(serializedResponse);
-            */
+            
         }
         else if (iResult == 0)
         {
