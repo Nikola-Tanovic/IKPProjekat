@@ -101,10 +101,6 @@ int  main(void)
     }
 
     
-    hashValue* hv = hmSearch(hashMap, 9);
-
-
-
     if (InitializeWindowsSockets() == false)
     {
         // we won't log anything since it will be logged
@@ -301,7 +297,7 @@ DWORD WINAPI clientThreadFunction(LPVOID lpParam) {
     }
 
     EnterCriticalSection(&tParameters->printCS);
-    printf("Bytes Sent to client: %ld\n", iResult);
+    printf("Bytes sent to client: %ld\n\n", iResult);
     LeaveCriticalSection(&tParameters->printCS);
 
     long lastRequestedFileId = -1;
@@ -338,7 +334,7 @@ DWORD WINAPI clientThreadFunction(LPVOID lpParam) {
             clientRequest->bufferSize = ntohl(clientRequest->bufferSize);
 
             EnterCriticalSection(&(tParameters->printCS));
-            printf("Client: IPAddress: %s Port: %d\n", inet_ntoa(tParameters->clientAddr.sin_addr), ntohs(tParameters->clientAddr.sin_port));
+            printf("Client IPAddress: %s \nClient Port: %d\n", inet_ntoa(tParameters->clientAddr.sin_addr), ntohs(tParameters->clientAddr.sin_port));
             printf("Thread ID: %d\n", tParameters->threadId);
             printf("Request from client:\nFile ID: %ld\nClient buff size: %ld\n", clientRequest->fileId, clientRequest->bufferSize);
             FD_CLR(tParameters->acceptedSocket, &readfds);
@@ -422,9 +418,7 @@ DWORD WINAPI clientThreadFunction(LPVOID lpParam) {
                 response->filePartData->relativeAddress = htonl(0);
 
 
-                EnterCriticalSection(&(tParameters->printCS));
-                printf("\nFajl: %s", response->filePartData->filePartAddress);
-                LeaveCriticalSection(&(tParameters->printCS));
+               
                 response->partsCount = 1;
 
                 //cuvamo ukupnu duzinu svih delova fajlova koji se ne nalaze ni na jednom klijnetu vec ih server salje
@@ -554,9 +548,9 @@ DWORD WINAPI clientThreadFunction(LPVOID lpParam) {
                     response->filePartData[i].ipClientSocket.sin_addr.S_un.S_addr = inet_addr("0.0.0.0");
                     summedFilePartSize += (sizeOfTheLastPart + 1);
                 }
-                else {
+                /*else {
                     free(&response->filePartData[i]);
-                }
+                }*/
 
                 //posto smo response->filePartData menjali u iteracijama, onda ce ona pokazivati na poslednji clan u nizu,
                 //ovom linijom moramo da vratimo da respon
@@ -571,7 +565,7 @@ DWORD WINAPI clientThreadFunction(LPVOID lpParam) {
             serializedResponse->partsCount = response->partsCount;
             int sizeOfSerializedFilePartData = ntohl(response->partsCount) * (sizeof(sockaddr_in) + 2 * sizeof(int)) +
                 (sizeof(char*) * filePartOnClientCounter) + summedFilePartSize * sizeof(char) + 6;
-            serializedResponse->filePartData = (char*)malloc(sizeOfSerializedFilePartData);
+            serializedResponse->filePartData = (char*)malloc(sizeOfSerializedFilePartData * sizeof(char));
             char* savedAddress = NULL;
             
             for (int i = 0; i < ntohl(response->partsCount); i++) {
@@ -605,14 +599,8 @@ DWORD WINAPI clientThreadFunction(LPVOID lpParam) {
                 }
                 else {
                     *((int*)serializedResponse->filePartData) = NULL;
-                    serializedResponse->filePartData += sizeof(char*); //ovde je velicina NULL 
+                    ((char*)serializedResponse->filePartData) += sizeof(char*); //ovde je velicina NULL 
                 }
-                
-                EnterCriticalSection(&tParameters->printCS);
-                printf("\n%s", serializedResponse->filePartData);
-                LeaveCriticalSection(&tParameters->printCS);
-
-                
             }
 
             serializedResponse->filePartData = savedAddress;
@@ -628,6 +616,9 @@ DWORD WINAPI clientThreadFunction(LPVOID lpParam) {
             memcpy(valueResponseSerialized, serializedResponse->filePartData, sizeOfSerializedFilePartData);
             valueResponseSerialized = savedAddress;
             //valueResponseSerialized[finalResponseSize] = '\0';
+
+            //free(serializedResponse->filePartData);
+            free(serializedResponse);
 
             int sentBytes = 0;
             do {                                                                         //ntohs
@@ -675,13 +666,17 @@ DWORD WINAPI clientThreadFunction(LPVOID lpParam) {
             lastRequestedFileId = clientRequest->fileId;
             int partCount = ntohs(response->partsCount);
             //ntohs
-            
+            for (int i = 0; i < partCount; i++)
+            {
+                free(response->filePartData[i].filePartAddress);
+            }
             free(response->filePartData);
             free(response);
 
             //free serialized response
-            free(serializedResponse->filePartData);
-            free(serializedResponse);
+          
+           
+            free(valueResponseSerialized);
             
         }
         else if (iResult == 0)

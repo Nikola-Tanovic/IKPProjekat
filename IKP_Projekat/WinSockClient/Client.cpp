@@ -146,7 +146,7 @@ int __cdecl main(int argc, char** argv)
 
     while (1) {
         if (exitFlag == -2) {
-            while (!WaitForMultipleObjects(2, handles, TRUE, INFINITE)) {
+            while (WaitForMultipleObjects(2, handles, TRUE, INFINITE)) {
 
             }
             free(ltParams);
@@ -348,8 +348,9 @@ DWORD WINAPI listenThreadFunction(LPVOID lpParam)
     iResult = shutdown(acceptedSocket, SD_SEND);
     if (iResult == SOCKET_ERROR)
     {
-        printf("(listenThread)shutdown failed with error: %d\n", WSAGetLastError());
+        printf("(listenThread)shutdown failed because no other client has connected yet.");
         closesocket(acceptedSocket);
+        closesocket(listenSocket);
         WSACleanup();
         return 1;
     }
@@ -370,9 +371,7 @@ DWORD WINAPI serverThreadFunction(LPVOID lpParam) {
 
     int result = 0;
 
-    char* recvBuff = (char*)malloc(sizeof(char) * DEFAULT_BUFLEN);
-    char* startRecvBuff = recvBuff;
-
+    
     // message to send
     request requestMessage;
 
@@ -433,7 +432,6 @@ DWORD WINAPI serverThreadFunction(LPVOID lpParam) {
     } while (initialServerResponse == -1);
 
     while (1) {
-
         FD_ZERO(&writefds);
 
         FD_SET(stParams->serverConnectSocket, &writefds);
@@ -464,6 +462,10 @@ DWORD WINAPI serverThreadFunction(LPVOID lpParam) {
             *stParams->exitFlag = -2;
             break;
         }
+
+        char* recvBuff = (char*)malloc(sizeof(char) * DEFAULT_BUFLEN);
+        char* startRecvBuff = recvBuff;
+
 
         long bufferSize = -1;
         printf("\nUnesite velicinu fajla koju zelite da smestite kod sebe: ");
@@ -604,7 +606,7 @@ DWORD WINAPI serverThreadFunction(LPVOID lpParam) {
                 LeaveCriticalSection(&stParams->printCS);
 
             }
-
+            
             serverResponse->filePartData = savedAddress;
 
         }
@@ -763,6 +765,7 @@ DWORD WINAPI serverThreadFunction(LPVOID lpParam) {
 
                         memcpy(printBuffer, recvBuff, serverResponse->filePartData[i].filePartSize);
 
+                        free(recvBuff);
                         printBuffer += serverResponse->filePartData[i].filePartSize;
                         endOfPrintBuffer = printBuffer;
 
@@ -785,7 +788,7 @@ DWORD WINAPI serverThreadFunction(LPVOID lpParam) {
                     }
                 } while (1);
                 // cleanup
-                free(recvBuff);
+                //free(recvBuff);
                 closesocket(clientConnectSocket);
 
             }
@@ -796,8 +799,8 @@ DWORD WINAPI serverThreadFunction(LPVOID lpParam) {
         LeaveCriticalSection(&stParams->printCS);
 
         /*
-        free(serverResponse);
-        free(printBuffer);
+       
+        free(startPrintBuffer);
         */
 
     }

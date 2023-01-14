@@ -24,7 +24,7 @@ colisionHmItem* collisionListInsert(colisionHmItem* collisionList, hmItem* hmIte
     }
 
     colisionHmItem* temp = collisionList;
-    while (temp->next->next) {
+    while (temp->next) {
         temp = temp->next;
     }
 
