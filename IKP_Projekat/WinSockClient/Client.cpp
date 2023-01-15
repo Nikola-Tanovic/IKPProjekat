@@ -149,6 +149,10 @@ int __cdecl main(int argc, char** argv)
             while (WaitForMultipleObjects(2, handles, TRUE, INFINITE)) {
 
             }
+            DeleteCriticalSection(&printCS);
+            DeleteCriticalSection(&bufferCS);
+            free(clientBuffer);
+            //free(&clientBuffer);
             free(ltParams);
             free(stParams);
             CloseHandle(handles[0]);
@@ -638,7 +642,7 @@ DWORD WINAPI serverThreadFunction(LPVOID lpParam) {
             completeFileSize += serverResponse->filePartData[i].filePartSize;
         }
 
-        printBuffer = (char*)malloc(sizeof(char) * completeFileSize);
+        printBuffer = (char*)malloc(sizeof(char) * (completeFileSize + 1));
 
         for (int i = 0; i < serverResponse->partsCount; i++) {
             if (serverResponse->filePartData[i].ipClientSocket.sin_port == 0 &&
@@ -807,11 +811,8 @@ DWORD WINAPI serverThreadFunction(LPVOID lpParam) {
         *endOfPrintBuffer = '\0';
         printf("\nCelokupna poruka: %s\n", startPrintBuffer);
         LeaveCriticalSection(&stParams->printCS);
-
-        /*
        
         free(startPrintBuffer);
-        */
 
     }
     // cleanup

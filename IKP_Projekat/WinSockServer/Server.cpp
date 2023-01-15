@@ -214,8 +214,12 @@ int  main(void)
         while(head != NULL) {
             Sleep(200); 
         }
+        DeleteCriticalSection(&printCS);
+        DeleteCriticalSection(&threadListCS);
+        DeleteCriticalSection(&hashMapCS);
         closesocket(listenSocket);
         WSACleanup();
+        free(ltParams);
         free(head);
         freeMap(hashMap);
         return 0;
@@ -714,13 +718,12 @@ DWORD WINAPI clientThreadFunction(LPVOID lpParam) {
 
     EnterCriticalSection(&(tParameters->threadListCS));
     deletethreadNode(tParameters->head, tParameters->threadId);
-    printf("Ispis u client communication thread-u\n");
-    printList(*(tParameters->head));
+    //printf("Ispis u client communication thread-u\n");
+    //printList(*(tParameters->head));
     LeaveCriticalSection(&(tParameters->threadListCS));
 
-
+    free(tParameters);
     return 0;
-    // here is where server shutdown loguc could be placed
 }
 
 DWORD WINAPI listenThreadFunction(LPVOID lpParam) {
@@ -781,13 +784,6 @@ DWORD WINAPI listenThreadFunction(LPVOID lpParam) {
                 break;
             }
 
-            //u tread stavljamo sve ovo ispod ovog komentara, kada prodje accept treba da 
-            //napravimo novu nit, u kojoj cemo pozvati ove recieve funkcije
-
-            //cuvamo povratnu vrednost niti
-            DWORD threadReturnValue = -1;
-
-
             clientCommunicationThreadParameters* tParameters = (clientCommunicationThreadParameters*)malloc(sizeof(clientCommunicationThreadParameters)); //ovde alocirati memoriju mallocom.
             tParameters->acceptedSocket = ltParams->acceptedSocket;
             tParameters->clientAddr = clientAddr;
@@ -809,13 +805,12 @@ DWORD WINAPI listenThreadFunction(LPVOID lpParam) {
             insertAtHead(ltParams->head, tn);
             printList(*(ltParams->head));
             LeaveCriticalSection(&(ltParams->threadListCS));
-
         }
 
         //gde se vrsi logika zatvaranja soketa i brisanja threadova iz liste
 
     } while (!*(ltParams->exitFlag));
-
+     
     //Zatvaranje Handla
     EnterCriticalSection(&(ltParams->threadListCS));
     threadNode* nodeToClose = findthreadNodeByThreadId(*(ltParams->head), ltParams->threadId);
@@ -826,8 +821,8 @@ DWORD WINAPI listenThreadFunction(LPVOID lpParam) {
     //brisanje thread node iz liste
     EnterCriticalSection(&(ltParams->threadListCS));
     deletethreadNode(ltParams->head, ltParams->threadId);
-    printf("Ispis u listen thread-u\n");
-    printList(*(ltParams->head));
+    //printf("Ispis u listen thread-u\n");
+    //printList(*(ltParams->head));
     LeaveCriticalSection(&(ltParams->threadListCS));
 
     return 0;
