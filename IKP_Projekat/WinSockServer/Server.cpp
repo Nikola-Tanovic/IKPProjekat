@@ -564,25 +564,16 @@ DWORD WINAPI clientThreadFunction(LPVOID lpParam) {
             serializedResponse->responseSize = response->responseSize;
             serializedResponse->partsCount = response->partsCount;
             int sizeOfSerializedFilePartData = ntohl(response->partsCount) * (sizeof(sockaddr_in) + 2 * sizeof(int)) +
-                (sizeof(char*) * filePartOnClientCounter) + summedFilePartSize * sizeof(char) + 6;
+                (sizeof(char*) * filePartOnClientCounter) + summedFilePartSize * sizeof(char);
             serializedResponse->filePartData = (char*)malloc(sizeOfSerializedFilePartData * sizeof(char));
             char* savedAddress = NULL;
             
             for (int i = 0; i < ntohl(response->partsCount); i++) {
-                /*if (response->filePartData[i].filePartAddress != NULL) {
-                    //zauzeli smo memorije koja je velicine duzina filePartAddress, 2 polja int i sockaddr_in struktura
-                    serializedResponse->filePartData = (char*)malloc(sizeof(char) * ntohl(response->filePartData[i].filePartSize) + 2 * sizeof(int) + sizeof(sockaddr_in));
-                }
-                else {
-                    //zauzimamo samo pokazivac na char jer klijentu saljemo NULL umesto dela fajla jer treba taj deo fajla da dobavi od drugog klijenta
-                    serializedResponse->filePartData = (char*)malloc(sizeof(char*) + 2 * sizeof(int) + sizeof(sockaddr_in));
-                }*/
                 if (i == 0)
                 {
                     savedAddress = serializedResponse->filePartData;
                 }
-                
-                
+     
                 memcpy(serializedResponse->filePartData, &(response->filePartData[i].ipClientSocket), sizeof(sockaddr_in));
                 serializedResponse->filePartData += sizeof(sockaddr_in);
 
@@ -592,7 +583,7 @@ DWORD WINAPI clientThreadFunction(LPVOID lpParam) {
                 memcpy(serializedResponse->filePartData, &(response->filePartData[i].relativeAddress), sizeof(int));
                 serializedResponse->filePartData += sizeof(int);
 
-                if(response->filePartData[i].filePartAddress != NULL)
+                if(*(response->filePartData[i].filePartAddress) != NULL)
                 {
                     memcpy(serializedResponse->filePartData, response->filePartData[i].filePartAddress, sizeof(char)* ntohl(response->filePartData[i].filePartSize));
                     serializedResponse->filePartData += sizeof(char) * ntohl(response->filePartData[i].filePartSize);
@@ -608,16 +599,17 @@ DWORD WINAPI clientThreadFunction(LPVOID lpParam) {
             long finalPartsCount = ntohl(serializedResponse->partsCount);
             char* valueResponseSerialized = (char*)malloc(sizeof(char) * finalResponseSize);
             savedAddress = valueResponseSerialized;
-            //strcat(valueResponseSerialized, itoa(serializedResponse->responseSize, buff, 10));
+
             memcpy(valueResponseSerialized, &finalResponseSize, sizeof(short));
             valueResponseSerialized += sizeof(short);
             memcpy(valueResponseSerialized, &finalPartsCount, sizeof(long));
             valueResponseSerialized += sizeof(long);
             memcpy(valueResponseSerialized, serializedResponse->filePartData, sizeOfSerializedFilePartData);
             valueResponseSerialized = savedAddress;
-            //valueResponseSerialized[finalResponseSize] = '\0';
 
-            //free(serializedResponse->filePartData);
+
+            //free serialized response
+            free(serializedResponse->filePartData);
             free(serializedResponse);
 
             int sentBytes = 0;
@@ -673,9 +665,6 @@ DWORD WINAPI clientThreadFunction(LPVOID lpParam) {
             free(response->filePartData);
             free(response);
 
-            //free serialized response
-          
-           
             free(valueResponseSerialized);
             
         }

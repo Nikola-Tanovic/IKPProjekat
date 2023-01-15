@@ -588,14 +588,24 @@ DWORD WINAPI serverThreadFunction(LPVOID lpParam) {
                 serverResponse->filePartData[i].relativeAddress = ntohl(serverResponse->filePartData[i].relativeAddress);
                 recvBuff += sizeof(int);
 
-                serverResponse->filePartData[i].filePartAddress = (char*)malloc(serverResponse->filePartData[i].filePartSize * sizeof(char));
-                memcpy(serverResponse->filePartData[i].filePartAddress, recvBuff, serverResponse->filePartData[i].filePartSize);
-                //ovde treba da se stavi null terminator
-                serverResponse->filePartData[i].filePartAddress[serverResponse->filePartData[i].filePartSize] = '\0';
-                recvBuff += serverResponse->filePartData[i].filePartSize;
-
                 serverResponse->filePartData[i].ipClientSocket.sin_port = ntohs(serverResponse->filePartData[i].ipClientSocket.sin_port);
 
+                if (serverResponse->filePartData[i].ipClientSocket.sin_port == 0)
+                {
+                    serverResponse->filePartData[i].filePartAddress = (char*)malloc(serverResponse->filePartData[i].filePartSize * sizeof(char));
+                    memcpy(serverResponse->filePartData[i].filePartAddress, recvBuff, serverResponse->filePartData[i].filePartSize);
+                    //ovde treba da se stavi null terminator
+                    serverResponse->filePartData[i].filePartAddress[serverResponse->filePartData[i].filePartSize] = '\0';
+                    recvBuff += serverResponse->filePartData[i].filePartSize;
+                }
+                else
+                {
+                    serverResponse->filePartData[i].filePartAddress = (char*)malloc(sizeof(char*));
+                    memcpy(serverResponse->filePartData[i].filePartAddress, recvBuff, sizeof(char*));
+                    //ovde treba da se stavi null terminator
+                    //serverResponse->filePartData[i].filePartAddress[sizeof(char*)] = '\0';
+                    recvBuff += sizeof(char*);
+                }
                 EnterCriticalSection(&stParams->printCS);
                 printf("\nFile Part size [%d]: %ld", i, serverResponse->filePartData[i].filePartSize);
                 printf("\nRelative address[%d]: %ld", i, serverResponse->filePartData[i].relativeAddress);
