@@ -198,7 +198,7 @@ int  main(void)
     threadNode* tn = createNewThreadNode(listenThread, ltParams->threadId);
     insertAtHead(&head, tn);
     printList(head);
-    printf("Listen thread pokrenut, unesite 'E' za kraj\n");
+    printf("Listen thread pokrenut, unesite 'e' za kraj\n");
     LeaveCriticalSection(&threadListCS);
 
     char input = ' ';
