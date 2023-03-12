@@ -36,6 +36,7 @@ bool InitializeWindowsSockets();
 
 DWORD WINAPI serverThreadFunction(LPVOID lpParam);
 DWORD WINAPI listenThreadFunction(LPVOID lpParam);
+//DWORD WINAPI getFilePartDataThreadFunction(LPVOID lpParam);
 
 int __cdecl main(int argc, char** argv)
 {
@@ -140,6 +141,7 @@ int __cdecl main(int argc, char** argv)
     DWORD serverThreadID;
     HANDLE serverThread = CreateThread(NULL, 0, &serverThreadFunction, stParams, 0, &serverThreadID);
 
+    //OVDE ZA SADA IMAMO NIZ THREADOVA FIKSNE DUZINE, TO CE SE PROMENITI U LISTU THREADOVA KAO NA SERVERU STO IMAMO 
     HANDLE handles[2];
     handles[0] = listenThread;
     handles[1] = serverThread;
@@ -157,12 +159,14 @@ int __cdecl main(int argc, char** argv)
             free(stParams);
             CloseHandle(handles[0]);
             CloseHandle(handles[1]);
+            
             return 0;
         }
         else {
             Sleep(200);
         }
     }
+   
     return 0;
 }
 
@@ -462,6 +466,9 @@ DWORD WINAPI serverThreadFunction(LPVOID lpParam) {
             requestMessage.fileId = htonl(fileId);
         } while ((fileId >= initialServerResponse || fileId < 0) && fileId != -2 );
 
+        //ovde se menja vrednost exitFlaga-a i eventualno izlazi iz funkcije 
+        // sa obzirom da se samo ovde moze zahtevati zatvaranje ovog klijenta, vrv necemo morati da proveravamo exitFlag u novom thread koji cemo implementirati za dobavljanje dela fajla 
+        //nego ce se taj thread svakako gasiti cim dobavi deo fajla jer nema potrebe da dalje radi 
         if (fileId == -2) {
             *stParams->exitFlag = -2;
             break;
@@ -644,7 +651,9 @@ DWORD WINAPI serverThreadFunction(LPVOID lpParam) {
 
         printBuffer = (char*)malloc(sizeof(char) * (completeFileSize + 1));
 
+        //PROLAZIMO KROZ NIZ STRUKTURA SA PODACIMA O DELOVIMA FAJLA
         for (int i = 0; i < serverResponse->partsCount; i++) {
+            //SLUCAJ KADA SE RADI O CISTOM DELU FAJLA KOJI NIJE NI NA JEDNOM KLIJENTU
             if (serverResponse->filePartData[i].ipClientSocket.sin_port == 0 &&
                 serverResponse->filePartData[i].ipClientSocket.sin_addr.S_un.S_addr == inet_addr("0.0.0.0")) {
 
@@ -679,6 +688,22 @@ DWORD WINAPI serverThreadFunction(LPVOID lpParam) {
                 printBuffer += serverResponse->filePartData[i].filePartSize;
                 endOfPrintBuffer = printBuffer;
             }
+            //SLUCAJ KADA SE DEO FAJLA NALAZI NA NEKOM KLIJENTU
+            //VEROVATNO CE SE OVDE OTVARATI NOVI THREAD, A I AKO NE, VEROVATNO CE OVA LOGIKA ISPOD ICI U POSEBNU FUNKCIJU ZA THREAD
+            
+            //&stParams->printCS
+            //serverResponse->filePartData[i].filePartSize server response je definisan u 502 valjda
+            //recvBuff 473 ovaj parametar mozda nece ni trebati 
+            //printBuffer 631 vrv deljenja promenljiva
+            //startPrintBufferFlag 634 vrv deljenja promenljiva
+            //endOfPrintBuffer 635 vrv deljenja promenljiva
+            //startPrintBuffer 636 vrv deljenja promenljiva
+            
+            //deljenim promenljivama cemo pristupati preko kriticnih sekcija
+            //getFilePartDataThreadFunction
+            
+            //u ovoj funkciji cu vrv definisati head za listu threadNode-ova jer nema potrebe da to bude u mainu jer cu ovde samo koristiti tu listu dok ce u mejnu ostatio onaj niz od dve niti
+            //imacemo punjenje strukture za thread paramtetre, kreiranje threada, i onda dodavanje tog threada u listu threadova - sve ovo je od linije 790 na serveru
             else {
 
                 // create a socket
@@ -805,8 +830,11 @@ DWORD WINAPI serverThreadFunction(LPVOID lpParam) {
                 //free(recvBuff);
                 closesocket(clientConnectSocket);
 
-            }
+            } // VEROVATNO CE OVDE BITI KRAJ TE FUNKCIJE KOJU CEMO STAVLJATI U THREAD
         }
+
+        //VRV CU OVDE STAVITI CEKANJE ZAVRSETKA SVIH THREADOVA KOJI DOBAVLJAJU DELOVE FAJLA
+
         EnterCriticalSection(&stParams->printCS);
         *endOfPrintBuffer = '\0';
         printf("\nCelokupna poruka: %s\n", startPrintBuffer);
@@ -816,10 +844,124 @@ DWORD WINAPI serverThreadFunction(LPVOID lpParam) {
 
     }
     // cleanup
-
+    //ovde ce trebati da se napravi zatvaranje threada i brisanje clana iz liste threadova kao na serveru sto imamo na kraju listenThreadFunctiona
     closesocket(stParams->serverConnectSocket);
     WSACleanup();
 
 
     return 0;
 }
+
+/*
+DWORD WINAPI getFilePartDataThreadFunction(LPVOID lpParam)
+{
+    // create a socket
+    SOCKET clientConnectSocket = socket(AF_INET,
+        SOCK_STREAM,
+        IPPROTO_TCP);
+
+    if (clientConnectSocket == INVALID_SOCKET)
+    {
+        EnterCriticalSection(&stParams->printCS);
+        printf("(serverThread)socket failed with error: %ld\n", WSAGetLastError());
+        LeaveCriticalSection(&stParams->printCS);
+        WSACleanup();
+        return 1;
+    }
+
+    // create and initialize address structure
+    sockaddr_in clientAddress;
+    clientAddress.sin_family = AF_INET;
+    //const char* buff = inet_ntoa(serverResponse->filePartData[i].ipClientSocket.sin_addr);
+
+    clientAddress.sin_addr.s_addr = inet_addr("127.0.0.1");
+    clientAddress.sin_port = htons(serverResponse->filePartData[i].ipClientSocket.sin_port + 1);
+
+    // connect to server specified in serverAddress and socket serverConnectSocket
+    if (connect(clientConnectSocket, (SOCKADDR*)&clientAddress, sizeof(clientAddress)) == SOCKET_ERROR)
+    {
+        EnterCriticalSection(&stParams->printCS);
+        printf("\nError: %d", WSAGetLastError());
+        printf("(serverThread)Unable to connect to server.\n");
+        LeaveCriticalSection(&stParams->printCS);
+        closesocket(clientConnectSocket);
+        WSACleanup();
+    }
+
+    //prebacujemo u neblokirajuci rezim
+    unsigned long mode = 1; //non-blocking mode
+    iResult = ioctlsocket(clientConnectSocket, FIONBIO, &mode);
+    if (iResult != NO_ERROR)
+        printf("(serverThread)ioctlsocket failed with error: %ld\n", iResult);
+
+    fd_set readfds;
+
+    timeval timeVal;
+    timeVal.tv_sec = 1;
+    timeVal.tv_usec = 0;
+
+    recvBuff = (char*)malloc(sizeof(char) * serverResponse->filePartData[i].filePartSize + 1);
+
+
+    do
+    {
+        FD_ZERO(&readfds);
+        FD_SET(clientConnectSocket, &readfds);
+
+        result = select(0, &readfds, NULL, NULL, &timeVal);
+
+        if (result == 0) {
+            //printf("Vreme za cekanje je isteklo (select pre recviver funkcije)\n");
+            //Sleep(1000);
+            continue;
+        }
+        else if (result == SOCKET_ERROR) {
+            // connection was closed gracefully
+            printf("(serverThread)Connection with client closed.\n");
+            closesocket(clientConnectSocket);
+            break;
+        }
+
+        // Receive data until the client shuts down the connection
+        iResult = recv(clientConnectSocket, recvBuff, serverResponse->filePartData[i].filePartSize, 0);
+
+        if (iResult > 0)
+        {
+            recvBuff[serverResponse->filePartData[i].filePartSize] = '\0';
+            printf("(serverThread)Message received from client: %s\n", recvBuff);
+
+            if (!startPrintBufferFlag) {
+                startPrintBuffer = printBuffer;
+                startPrintBufferFlag = 1;
+            }
+
+            memcpy(printBuffer, recvBuff, serverResponse->filePartData[i].filePartSize);
+
+            free(recvBuff);
+            printBuffer += serverResponse->filePartData[i].filePartSize;
+            endOfPrintBuffer = printBuffer;
+
+            FD_CLR(clientConnectSocket, &readfds);
+            break;
+        }
+        else if (iResult == 0)
+        {
+            // connection was closed gracefully
+            printf("(serverThread)Connection with client closed.\n");
+            closesocket(clientConnectSocket);
+            break;
+        }
+        else
+        {
+            // there was an error during recv
+            printf("(serverThread)recv failed with error: %d\n", WSAGetLastError());
+            closesocket(clientConnectSocket);
+            break;
+        }
+    } while (1);
+
+    //OVDE CE ICI ZATVARANJE THREADA I BRISANJE TOG THREAD NODEA IZ LISTE - TO IMAMO NA SERVERU OD 712. LINIJE
+    // cleanup
+    //free(recvBuff);
+    closesocket(clientConnectSocket);
+}*/

@@ -27,11 +27,11 @@ typedef struct clientCommunicationThreadParameters {
 typedef struct listenThreadParameters {
     SOCKET listenSocket;
     SOCKET acceptedSocket;
-    threadNode** head;
+    threadNode** head; //vrv cu nesto slicno imati na klijentu
     CRITICAL_SECTION hashMapCS;
     CRITICAL_SECTION threadListCS;
     CRITICAL_SECTION printCS;
-    int* exitFlag;
+    int* exitFlag; //vrv cu nesto slicno imati na klijentu
     DWORD threadId;
     hashMap* hashMap;
 }listenThreadParameters;
@@ -54,7 +54,7 @@ int  main(void)
     "Led led sladoled, sladja cura nego med",
     "Skeledzijo na Moravi prijatelju stari, dal si skoro prevezao preko dvoje mladih",
     "Svi kockari gube sve kasnije il pre",
-    "Zasto nisam pticica, da letim daleko, pa da vidim napolju, ceka li me neko",
+    "Sina majci iz narucja oteo je zulumcar, sada kune svoju sudbu sto je janicar",
     "Ja necu lepsu, ja necu drugu, birao sam sreco moja ili tebe ili tugu",
     "Ja sam ja, Jeremija, prezivam se Krstic",
     "Iznenada u kafani staroj, sinoc sretoh prijatelja svoga",
@@ -89,6 +89,9 @@ int  main(void)
     CRITICAL_SECTION hashMapCS;
     InitializeCriticalSection(&hashMapCS);
 
+    //
+    //LISTA THREADOVA
+    //
     //initializing list of threads
     threadNode* head = NULL;
 
@@ -127,7 +130,7 @@ int  main(void)
         return 1;
     }
 
-    // Create a SOCKET for connecting to server
+    // Create a SOCKET for listening for client sockets
     listenSocket = socket(AF_INET,      // IPv4 address famly
         SOCK_STREAM,  // stream socket
         IPPROTO_TCP); // TCP
@@ -721,7 +724,7 @@ DWORD WINAPI clientThreadFunction(LPVOID lpParam) {
     //printf("Ispis u client communication thread-u\n");
     //printList(*(tParameters->head));
     LeaveCriticalSection(&(tParameters->threadListCS));
-
+    
     free(tParameters);
     return 0;
 }
@@ -797,8 +800,6 @@ DWORD WINAPI listenThreadFunction(LPVOID lpParam) {
 
             HANDLE clientCommunicaitonThread = CreateThread(NULL, 0, &clientThreadFunction, tParameters, 0, &(tParameters->threadId));
 
-            //postaviti pitanje vezano za ovo
-            //da li moze da se desi da se ne napuni tParameters.threadId a da se udje u ovu kriticnu sekciju?
             EnterCriticalSection(&(ltParams->threadListCS));
             printf("Thread ID(unutar listen thread-a funkcije servera, id thread-a za komunikaciju sa klijentom): %d\n", tParameters->threadId);
             threadNode* tn = createNewThreadNode(clientCommunicaitonThread, tParameters->threadId);
@@ -806,9 +807,6 @@ DWORD WINAPI listenThreadFunction(LPVOID lpParam) {
             printList(*(ltParams->head));
             LeaveCriticalSection(&(ltParams->threadListCS));
         }
-
-        //gde se vrsi logika zatvaranja soketa i brisanja threadova iz liste
-
     } while (!*(ltParams->exitFlag));
      
     //Zatvaranje Handla
