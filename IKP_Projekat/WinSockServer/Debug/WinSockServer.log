@@ -1,4 +1,32 @@
-﻿  Server.cpp
+﻿  filePartDataList.cpp
+D:\fakultet\CETVRTA GODINA\Industrijski komunkacioni protokoli u EES\IKP_Projekat\IKPProjekat\IKP_Projekat\WinSockServer\filePartDataList.cpp(2,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+D:\fakultet\CETVRTA GODINA\Industrijski komunkacioni protokoli u EES\IKP_Projekat\IKPProjekat\IKP_Projekat\WinSockServer\lists.h(2,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+D:\fakultet\CETVRTA GODINA\Industrijski komunkacioni protokoli u EES\IKP_Projekat\IKPProjekat\IKP_Projekat\WinSockServer\structures.h(3,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+D:\fakultet\CETVRTA GODINA\Industrijski komunkacioni protokoli u EES\IKP_Projekat\IKPProjekat\IKP_Projekat\WinSockServer\structures.h(4,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+D:\fakultet\CETVRTA GODINA\Industrijski komunkacioni protokoli u EES\IKP_Projekat\IKPProjekat\IKP_Projekat\WinSockServer\structures.h(24,2): warning C4091: 'typedef ': ignored on left of 'request' when no variable is declared
+D:\fakultet\CETVRTA GODINA\Industrijski komunkacioni protokoli u EES\IKP_Projekat\IKPProjekat\IKP_Projekat\WinSockServer\lists.h(3,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+D:\fakultet\CETVRTA GODINA\Industrijski komunkacioni protokoli u EES\IKP_Projekat\IKPProjekat\IKP_Projekat\WinSockServer\filePartDataList.cpp(17,10): warning C4477: 'printf' : format string '%d' requires an argument of type 'int', but variadic argument 1 has type 'IN_ADDR'
+D:\fakultet\CETVRTA GODINA\Industrijski komunkacioni protokoli u EES\IKP_Projekat\IKPProjekat\IKP_Projekat\WinSockServer\filePartDataList.cpp(86,10): warning C4477: 'printf' : format string '%d' requires an argument of type 'int', but variadic argument 1 has type 'IN_ADDR'
+D:\fakultet\CETVRTA GODINA\Industrijski komunkacioni protokoli u EES\IKP_Projekat\IKPProjekat\IKP_Projekat\WinSockServer\filePartDataList.cpp(107,49): warning C4996: 'inet_addr': Use inet_pton() or InetPton() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+D:\fakultet\CETVRTA GODINA\Industrijski komunkacioni protokoli u EES\IKP_Projekat\IKPProjekat\IKP_Projekat\WinSockServer\filePartDataList.cpp(120,52): warning C4996: 'inet_addr': Use inet_pton() or InetPton() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+D:\fakultet\CETVRTA GODINA\Industrijski komunkacioni protokoli u EES\IKP_Projekat\IKPProjekat\IKP_Projekat\WinSockServer\filePartDataList.cpp(143,16): warning C4101: 'prev': unreferenced local variable
+  hashMap.cpp
+D:\fakultet\CETVRTA GODINA\Industrijski komunkacioni protokoli u EES\IKP_Projekat\IKPProjekat\IKP_Projekat\WinSockServer\hashMap.cpp(1,13): warning C4081: expected 'newline'; found ';'
+D:\fakultet\CETVRTA GODINA\Industrijski komunkacioni protokoli u EES\IKP_Projekat\IKPProjekat\IKP_Projekat\WinSockServer\hashMap.cpp(2,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+D:\fakultet\CETVRTA GODINA\Industrijski komunkacioni protokoli u EES\IKP_Projekat\IKPProjekat\IKP_Projekat\WinSockServer\hashMap.h(2,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+D:\fakultet\CETVRTA GODINA\Industrijski komunkacioni protokoli u EES\IKP_Projekat\IKPProjekat\IKP_Projekat\WinSockServer\lists.h(2,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+D:\fakultet\CETVRTA GODINA\Industrijski komunkacioni protokoli u EES\IKP_Projekat\IKPProjekat\IKP_Projekat\WinSockServer\structures.h(3,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+D:\fakultet\CETVRTA GODINA\Industrijski komunkacioni protokoli u EES\IKP_Projekat\IKPProjekat\IKP_Projekat\WinSockServer\structures.h(4,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+D:\fakultet\CETVRTA GODINA\Industrijski komunkacioni protokoli u EES\IKP_Projekat\IKPProjekat\IKP_Projekat\WinSockServer\structures.h(24,2): warning C4091: 'typedef ': ignored on left of 'request' when no variable is declared
+D:\fakultet\CETVRTA GODINA\Industrijski komunkacioni protokoli u EES\IKP_Projekat\IKPProjekat\IKP_Projekat\WinSockServer\lists.h(3,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+  hmElementList.cpp
+D:\fakultet\CETVRTA GODINA\Industrijski komunkacioni protokoli u EES\IKP_Projekat\IKPProjekat\IKP_Projekat\WinSockServer\hmElementList.cpp(1,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+D:\fakultet\CETVRTA GODINA\Industrijski komunkacioni protokoli u EES\IKP_Projekat\IKPProjekat\IKP_Projekat\WinSockServer\lists.h(2,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+D:\fakultet\CETVRTA GODINA\Industrijski komunkacioni protokoli u EES\IKP_Projekat\IKPProjekat\IKP_Projekat\WinSockServer\structures.h(3,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+D:\fakultet\CETVRTA GODINA\Industrijski komunkacioni protokoli u EES\IKP_Projekat\IKPProjekat\IKP_Projekat\WinSockServer\structures.h(4,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+D:\fakultet\CETVRTA GODINA\Industrijski komunkacioni protokoli u EES\IKP_Projekat\IKPProjekat\IKP_Projekat\WinSockServer\structures.h(24,2): warning C4091: 'typedef ': ignored on left of 'request' when no variable is declared
+D:\fakultet\CETVRTA GODINA\Industrijski komunkacioni protokoli u EES\IKP_Projekat\IKPProjekat\IKP_Projekat\WinSockServer\lists.h(3,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+  Server.cpp
 D:\fakultet\CETVRTA GODINA\Industrijski komunkacioni protokoli u EES\IKP_Projekat\IKPProjekat\IKP_Projekat\WinSockServer\Server.cpp(5,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
 D:\fakultet\CETVRTA GODINA\Industrijski komunkacioni protokoli u EES\IKP_Projekat\IKPProjekat\IKP_Projekat\WinSockServer\Server.cpp(6,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
 D:\fakultet\CETVRTA GODINA\Industrijski komunkacioni protokoli u EES\IKP_Projekat\IKPProjekat\IKP_Projekat\WinSockServer\Server.cpp(7,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
@@ -18,4 +46,8 @@ D:\fakultet\CETVRTA GODINA\Industrijski komunkacioni protokoli u EES\IKP_Projeka
 D:\fakultet\CETVRTA GODINA\Industrijski komunkacioni protokoli u EES\IKP_Projekat\IKPProjekat\IKP_Projekat\WinSockServer\Server.cpp(423,79): warning C4996: 'inet_addr': Use inet_pton() or InetPton() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
 D:\fakultet\CETVRTA GODINA\Industrijski komunkacioni protokoli u EES\IKP_Projekat\IKPProjekat\IKP_Projekat\WinSockServer\Server.cpp(470,74): warning C4996: 'inet_addr': Use inet_pton() or InetPton() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
 D:\fakultet\CETVRTA GODINA\Industrijski komunkacioni protokoli u EES\IKP_Projekat\IKPProjekat\IKP_Projekat\WinSockServer\Server.cpp(555,85): warning C4996: 'inet_addr': Use inet_pton() or InetPton() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+  threadList.cpp
+D:\fakultet\CETVRTA GODINA\Industrijski komunkacioni protokoli u EES\IKP_Projekat\IKPProjekat\IKP_Projekat\WinSockServer\threadList.cpp(1,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+D:\fakultet\CETVRTA GODINA\Industrijski komunkacioni protokoli u EES\IKP_Projekat\IKPProjekat\IKP_Projekat\WinSockServer\threadList.cpp(102,14): warning C4101: 'prev': unreferenced local variable
+  Generating Code...
   WinSockServer.vcxproj -> D:\fakultet\CETVRTA GODINA\Industrijski komunkacioni protokoli u EES\IKP_Projekat\IKPProjekat\IKP_Projekat\Debug\WinSockServer.exe

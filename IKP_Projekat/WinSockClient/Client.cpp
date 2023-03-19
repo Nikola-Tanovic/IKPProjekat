@@ -7,6 +7,8 @@
 #include <stdio.h>
 #include <conio.h>
 #include "structures.h";
+#include "threadList.h";
+#include "filePartDataList.h";
 
 #define DEFAULT_BUFLEN 512
 #define DEFAULT_PORT 27016
@@ -30,13 +32,38 @@ typedef struct serverThreadParameters {
 }serverThreadParameters;
 
 
+//&stParams->printCS
+            //serverResponse->filePartData[i].filePartSize server response je definisan u 502 valjda, trebace ovde citav server response
+            //recvBuff 473 ovaj parametar mozda nece ni trebati 
+            //printBuffer 631 vrv deljenja promenljiva
+            //startPrintBufferFlag 634 vrv deljenja promenljiva
+            //endOfPrintBuffer 635 vrv deljenja promenljiva
+            //startPrintBuffer 636 vrv deljenja promenljiva
+
+typedef struct getFilePartDataThreadParameters {
+    CRITICAL_SECTION printCS;
+    CRITICAL_SECTION threadListCS;
+    CRITICAL_SECTION printBufferCS;
+    CRITICAL_SECTION filePartDataListCS;
+    filePartDataResponse filePartData;
+    //char* recvBuff;
+    char** printBuffer;
+    int* startPrintBufferFlag;
+    char** endOfPrintBuffer;
+    char** startPrintBuffer;
+    DWORD threadId;
+    threadNode** head;
+    filePartDataNode** filePartDataListHead;
+}getFilePartDataTHreadParameters;
+
+
 // Initializes WinSock2 library
 // Returns true if succeeded, false otherwise.
 bool InitializeWindowsSockets();
 
 DWORD WINAPI serverThreadFunction(LPVOID lpParam);
 DWORD WINAPI listenThreadFunction(LPVOID lpParam);
-//DWORD WINAPI getFilePartDataThreadFunction(LPVOID lpParam);
+DWORD WINAPI getFilePartDataThreadFunction(LPVOID lpParam);
 
 int __cdecl main(int argc, char** argv)
 {
@@ -639,6 +666,29 @@ DWORD WINAPI serverThreadFunction(LPVOID lpParam) {
         int startPrintBufferFlag = 0;
         char* endOfPrintBuffer = NULL;
 
+        //
+        //LISTA THREADOVA
+        //
+        //initializing list of threads
+        threadNode* head = NULL;
+
+        //critical section that controls access to threadList
+        CRITICAL_SECTION threadListCS;
+        InitializeCriticalSection(&threadListCS);
+
+        //critical section that controls access to printBuffer
+        CRITICAL_SECTION printBufferCS;
+        InitializeCriticalSection(&printBufferCS);
+
+        //HOCU DA NAPRAVIM LISTU FILEPARTDATANODE-OVA U KOJU CU DA STAVLJAM SVE DELOVE FAJLA KOJE POKUPIM PA CU IH ONDA KAD IH SVE SAKUPIM SA DRUGIH KLIJENATA 
+        //SORTIRATI PO RELATIVNOJ ADRESI I TEK ONDA SASTAVITI PORUKU ZA ISPIS CELOG FAJLA
+        //initializing list of filePartData
+        filePartDataNode* filePartDataListHead = NULL;//(filePartDataNode*)malloc(sizeof(filePartDataNode) * serverResponse->partsCount);
+
+        //critical section that controls access to FilePartDataList
+        CRITICAL_SECTION filePartDataListCS;
+        InitializeCriticalSection(&filePartDataListCS);
+
         //free the first recvBuff
         recvBuff = startRecvBuff;
         free(recvBuff);
@@ -678,6 +728,16 @@ DWORD WINAPI serverThreadFunction(LPVOID lpParam) {
                     }
                 }
 
+                filePartDataNode* newNode = createNewFilePartDataNode(serverResponse->filePartData[i].relativeAddress, serverResponse->filePartData[i].filePartSize);
+                memcpy(newNode->filePartAddress, serverResponse->filePartData[i].filePartAddress, serverResponse->filePartData[i].filePartSize);
+
+                EnterCriticalSection(&filePartDataListCS);
+                insertAtHead(&filePartDataListHead, newNode);
+                LeaveCriticalSection(&filePartDataListCS);
+
+                //OVDE JE LOGIKA SA ZAJEDNICKIM PRINTBUFFEROM
+                /*
+                EnterCriticalSection(&printBufferCS);
                 if (!startPrintBufferFlag) {
                     startPrintBuffer = printBuffer;
                     startPrintBufferFlag = 1;
@@ -687,12 +747,15 @@ DWORD WINAPI serverThreadFunction(LPVOID lpParam) {
                 memcpy(printBuffer, serverResponse->filePartData[i].filePartAddress, serverResponse->filePartData[i].filePartSize);
                 printBuffer += serverResponse->filePartData[i].filePartSize;
                 endOfPrintBuffer = printBuffer;
+                LeaveCriticalSection(&printBufferCS);
+                */
+                //
             }
             //SLUCAJ KADA SE DEO FAJLA NALAZI NA NEKOM KLIJENTU
             //VEROVATNO CE SE OVDE OTVARATI NOVI THREAD, A I AKO NE, VEROVATNO CE OVA LOGIKA ISPOD ICI U POSEBNU FUNKCIJU ZA THREAD
             
             //&stParams->printCS
-            //serverResponse->filePartData[i].filePartSize server response je definisan u 502 valjda
+            //serverResponse->filePartData[i].filePartSize server response je definisan u 502 valjda, trebace ovde citav server response
             //recvBuff 473 ovaj parametar mozda nece ni trebati 
             //printBuffer 631 vrv deljenja promenljiva
             //startPrintBufferFlag 634 vrv deljenja promenljiva
@@ -706,6 +769,43 @@ DWORD WINAPI serverThreadFunction(LPVOID lpParam) {
             //imacemo punjenje strukture za thread paramtetre, kreiranje threada, i onda dodavanje tog threada u listu threadova - sve ovo je od linije 790 na serveru
             else {
 
+                //OVDE JE LOGIKA SA ZAJEDNICKIM PRINTBUFFEROM
+                /*
+                EnterCriticalSection(&printBufferCS);
+                if (!startPrintBufferFlag) {
+                    startPrintBuffer = printBuffer;
+                    startPrintBufferFlag = 1;
+                }
+                LeaveCriticalSection(&printBufferCS);
+                */
+
+                getFilePartDataThreadParameters* tParameters = (getFilePartDataThreadParameters*)malloc(sizeof(getFilePartDataTHreadParameters));
+                tParameters->printCS = stParams->printCS;
+                tParameters->filePartData = serverResponse->filePartData[i];
+                //tParameters->recvBuff = recvBuff; //nisam siguran da cu ovo prosledjivati kao parametar, mozda cu samo lokalno u funkciji
+                tParameters->printBuffer = &printBuffer;
+                tParameters->startPrintBuffer = &startPrintBuffer;
+                tParameters->endOfPrintBuffer = &endOfPrintBuffer;
+                tParameters->startPrintBufferFlag = &startPrintBufferFlag;
+                tParameters->threadId = 0;
+                tParameters->head = &head;
+                tParameters->threadListCS = threadListCS;
+                tParameters->printBufferCS = printBufferCS;
+                tParameters->filePartDataListHead = &filePartDataListHead;
+                tParameters->filePartDataListCS = filePartDataListCS;
+                
+
+                HANDLE getFilePartDataThread = CreateThread(NULL, 0, &getFilePartDataThreadFunction, tParameters, 0, &(tParameters->threadId));
+                
+                EnterCriticalSection(&threadListCS);
+                printf("Thread ID getFilePartData thread-a: %d\n", tParameters->threadId);
+                threadNode* tn = createNewThreadNode(getFilePartDataThread, tParameters->threadId);
+                insertAtHead(&head, tn);
+                //printList(head);
+                LeaveCriticalSection(&threadListCS);
+
+
+                /*
                 // create a socket
                 SOCKET clientConnectSocket = socket(AF_INET,
                     SOCK_STREAM,
@@ -754,7 +854,7 @@ DWORD WINAPI serverThreadFunction(LPVOID lpParam) {
                     closesocket(clientConnectSocket);
                     WSACleanup();
                 }
-                */
+                
                 //prebacujemo u neblokirajuci rezim
                 unsigned long mode = 1; //non-blocking mode
                 iResult = ioctlsocket(clientConnectSocket, FIONBIO, &mode);
@@ -829,19 +929,46 @@ DWORD WINAPI serverThreadFunction(LPVOID lpParam) {
                 // cleanup
                 //free(recvBuff);
                 closesocket(clientConnectSocket);
+                */
 
             } // VEROVATNO CE OVDE BITI KRAJ TE FUNKCIJE KOJU CEMO STAVLJATI U THREAD
         }
 
         //VRV CU OVDE STAVITI CEKANJE ZAVRSETKA SVIH THREADOVA KOJI DOBAVLJAJU DELOVE FAJLA
+        while (head != NULL) {
+            Sleep(200);
+        }
+        if (serverResponse->partsCount > 1)
+        {
+            bubbleSort(filePartDataListHead);
+        }
+
+        filePartDataNode* iterator = filePartDataListHead;
+
+        while (iterator != NULL)
+        {
+            if (!startPrintBufferFlag)
+            {
+                startPrintBuffer = printBuffer;
+                startPrintBufferFlag = 1;
+            }
+            memcpy(printBuffer, iterator->filePartAddress, iterator->filePartSize);
+            printBuffer += iterator->filePartSize;
+            endOfPrintBuffer = printBuffer;
+
+            iterator = iterator->next;
+        }
 
         EnterCriticalSection(&stParams->printCS);
         *endOfPrintBuffer = '\0';
         printf("\nCelokupna poruka: %s\n", startPrintBuffer);
         LeaveCriticalSection(&stParams->printCS);
        
-        free(startPrintBuffer);
-
+        //OVDE IDE OSLOBADJANJE MEMORIJE
+        //ovo mislim da me treba jer su lokalno definisane, nema malloca
+        //free(printBuffer);
+        free(serverResponse);
+        //free(recvBuff);
     }
     // cleanup
     //ovde ce trebati da se napravi zatvaranje threada i brisanje clana iz liste threadova kao na serveru sto imamo na kraju listenThreadFunctiona
@@ -852,19 +979,23 @@ DWORD WINAPI serverThreadFunction(LPVOID lpParam) {
     return 0;
 }
 
-/*
+
 DWORD WINAPI getFilePartDataThreadFunction(LPVOID lpParam)
 {
+    getFilePartDataThreadParameters* tParameters = (getFilePartDataThreadParameters*)lpParam;
+
     // create a socket
     SOCKET clientConnectSocket = socket(AF_INET,
         SOCK_STREAM,
         IPPROTO_TCP);
 
+    int result = 0;
+
     if (clientConnectSocket == INVALID_SOCKET)
     {
-        EnterCriticalSection(&stParams->printCS);
-        printf("(serverThread)socket failed with error: %ld\n", WSAGetLastError());
-        LeaveCriticalSection(&stParams->printCS);
+        EnterCriticalSection(&tParameters->printCS);
+        printf("(getFilePartDataThread)socket failed with error: %ld\n", WSAGetLastError());
+        LeaveCriticalSection(&tParameters->printCS);
         WSACleanup();
         return 1;
     }
@@ -875,24 +1006,24 @@ DWORD WINAPI getFilePartDataThreadFunction(LPVOID lpParam)
     //const char* buff = inet_ntoa(serverResponse->filePartData[i].ipClientSocket.sin_addr);
 
     clientAddress.sin_addr.s_addr = inet_addr("127.0.0.1");
-    clientAddress.sin_port = htons(serverResponse->filePartData[i].ipClientSocket.sin_port + 1);
+    clientAddress.sin_port = htons(tParameters->filePartData.ipClientSocket.sin_port + 1);
 
     // connect to server specified in serverAddress and socket serverConnectSocket
     if (connect(clientConnectSocket, (SOCKADDR*)&clientAddress, sizeof(clientAddress)) == SOCKET_ERROR)
     {
-        EnterCriticalSection(&stParams->printCS);
+        EnterCriticalSection(&tParameters->printCS);
         printf("\nError: %d", WSAGetLastError());
-        printf("(serverThread)Unable to connect to server.\n");
-        LeaveCriticalSection(&stParams->printCS);
+        printf("(getFilePartDataThread)Unable to connect to server.\n");
+        LeaveCriticalSection(&tParameters->printCS);
         closesocket(clientConnectSocket);
         WSACleanup();
     }
 
     //prebacujemo u neblokirajuci rezim
     unsigned long mode = 1; //non-blocking mode
-    iResult = ioctlsocket(clientConnectSocket, FIONBIO, &mode);
+    int iResult = ioctlsocket(clientConnectSocket, FIONBIO, &mode);
     if (iResult != NO_ERROR)
-        printf("(serverThread)ioctlsocket failed with error: %ld\n", iResult);
+        printf("(getFilePartDataThread)ioctlsocket failed with error: %ld\n", iResult);
 
     fd_set readfds;
 
@@ -900,7 +1031,7 @@ DWORD WINAPI getFilePartDataThreadFunction(LPVOID lpParam)
     timeVal.tv_sec = 1;
     timeVal.tv_usec = 0;
 
-    recvBuff = (char*)malloc(sizeof(char) * serverResponse->filePartData[i].filePartSize + 1);
+    char* recvBuff = (char*)malloc(sizeof(char) * tParameters->filePartData.filePartSize + 1);
 
 
     do
@@ -916,52 +1047,83 @@ DWORD WINAPI getFilePartDataThreadFunction(LPVOID lpParam)
             continue;
         }
         else if (result == SOCKET_ERROR) {
+            EnterCriticalSection(&tParameters->printCS);
             // connection was closed gracefully
-            printf("(serverThread)Connection with client closed.\n");
+            printf("(getFilePartDataThread)Connection with client closed.\n");
+            LeaveCriticalSection(&tParameters->printCS);
+
             closesocket(clientConnectSocket);
             break;
         }
 
         // Receive data until the client shuts down the connection
-        iResult = recv(clientConnectSocket, recvBuff, serverResponse->filePartData[i].filePartSize, 0);
+        iResult = recv(clientConnectSocket, recvBuff, tParameters->filePartData.filePartSize, 0);
 
         if (iResult > 0)
         {
-            recvBuff[serverResponse->filePartData[i].filePartSize] = '\0';
-            printf("(serverThread)Message received from client: %s\n", recvBuff);
+            recvBuff[tParameters->filePartData.filePartSize] = '\0';
+            EnterCriticalSection(&tParameters->printCS);
+            printf("(getFilePartDataThread)Message received from client: %s\n", recvBuff);
+            LeaveCriticalSection(&tParameters->printCS);
 
-            if (!startPrintBufferFlag) {
-                startPrintBuffer = printBuffer;
-                startPrintBufferFlag = 1;
+            //OVDE JE LOGIKA SA ZAJEDNICKIM PRINTBUFFEROM
+            /*EnterCriticalSection(&tParameters->printBufferCS);
+            if (!(*(tParameters->startPrintBufferFlag))) {
+                *(tParameters->startPrintBuffer) = *(tParameters->printBuffer);
+                *(tParameters->startPrintBufferFlag) = 1;
             }
+            
+            EnterCriticalSection(&tParameters->printBufferCS);
+            memcpy(*(tParameters->printBuffer), recvBuff, tParameters->filePartData.filePartSize);
 
-            memcpy(printBuffer, recvBuff, serverResponse->filePartData[i].filePartSize);
+            *(tParameters->printBuffer) += tParameters->filePartData.filePartSize;
+            *(tParameters->endOfPrintBuffer) = *(tParameters->printBuffer);
+            LeaveCriticalSection(&tParameters->printBufferCS);
+            */
 
+            filePartDataNode* newNode = createNewFilePartDataNode(tParameters->filePartData.relativeAddress, tParameters->filePartData.filePartSize);
+            memcpy(newNode->filePartAddress, recvBuff, tParameters->filePartData.filePartSize);
+
+            EnterCriticalSection(&tParameters->filePartDataListCS);
+            insertAtHead(tParameters->filePartDataListHead, newNode);
+            LeaveCriticalSection(&tParameters->filePartDataListCS);
+            
             free(recvBuff);
-            printBuffer += serverResponse->filePartData[i].filePartSize;
-            endOfPrintBuffer = printBuffer;
-
             FD_CLR(clientConnectSocket, &readfds);
             break;
         }
         else if (iResult == 0)
         {
             // connection was closed gracefully
-            printf("(serverThread)Connection with client closed.\n");
+            printf("(getFilePartDataThread)Connection with client closed.\n");
             closesocket(clientConnectSocket);
             break;
         }
         else
         {
             // there was an error during recv
-            printf("(serverThread)recv failed with error: %d\n", WSAGetLastError());
+            printf("(getFilePartDataThread)recv failed with error: %d\n", WSAGetLastError());
             closesocket(clientConnectSocket);
             break;
         }
     } while (1);
 
     //OVDE CE ICI ZATVARANJE THREADA I BRISANJE TOG THREAD NODEA IZ LISTE - TO IMAMO NA SERVERU OD 712. LINIJE
+    EnterCriticalSection(&(tParameters->threadListCS));
+    threadNode* nodeToDelete = findthreadNodeByThreadId(*(tParameters->head), tParameters->threadId);
+    LeaveCriticalSection(&(tParameters->threadListCS));
+
+    CloseHandle(nodeToDelete->thread);
+
+    EnterCriticalSection(&(tParameters->threadListCS));
+    deletethreadNode(tParameters->head, tParameters->threadId);
+    LeaveCriticalSection(&(tParameters->threadListCS));
+
+    free(tParameters);
+    
     // cleanup
     //free(recvBuff);
     closesocket(clientConnectSocket);
-}*/
+
+    return 0;
+}
