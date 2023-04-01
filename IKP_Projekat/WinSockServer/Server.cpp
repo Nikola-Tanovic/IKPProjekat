@@ -125,7 +125,9 @@ int  main(void)
     iResult = getaddrinfo(NULL, DEFAULT_PORT, &hints, &resultingAddress);
     if (iResult != 0)
     {
+        EnterCriticalSection(&printCS);
         printf("getaddrinfo failed with error: %d\n", iResult);
+        LeaveCriticalSection(&printCS);
         WSACleanup();
         return 1;
     }
@@ -137,7 +139,9 @@ int  main(void)
 
     if (listenSocket == INVALID_SOCKET)
     {
+        EnterCriticalSection(&printCS);
         printf("socket failed with error: %ld\n", WSAGetLastError());
+        LeaveCriticalSection(&printCS);
         freeaddrinfo(resultingAddress);
         WSACleanup();
         return 1;
@@ -148,7 +152,9 @@ int  main(void)
     iResult = bind(listenSocket, resultingAddress->ai_addr, (int)resultingAddress->ai_addrlen);
     if (iResult == SOCKET_ERROR)
     {
+        EnterCriticalSection(&printCS);
         printf("bind failed with error: %d\n", WSAGetLastError());
+        LeaveCriticalSection(&printCS);
         freeaddrinfo(resultingAddress);
         closesocket(listenSocket);
         WSACleanup();
@@ -162,18 +168,25 @@ int  main(void)
     iResult = listen(listenSocket, SOMAXCONN);
     if (iResult == SOCKET_ERROR)
     {
+        EnterCriticalSection(&printCS);
         printf("listen failed with error: %d\n", WSAGetLastError());
+        LeaveCriticalSection(&printCS);
         closesocket(listenSocket);
         WSACleanup();
         return 1;
     }
 
+    EnterCriticalSection(&printCS);
     printf("Server initialized, waiting for clients.\n");
+    LeaveCriticalSection(&printCS);
 
     iResult = ioctlsocket(listenSocket, FIONBIO, &mode);
     if (iResult != NO_ERROR)
+    {
+        EnterCriticalSection(&printCS);
         printf("ioctlsocket failed with error: %ld\n", iResult);
-
+        LeaveCriticalSection(&printCS);
+    }
     
     /// <summary>
     /// pocetak thread-a gde se poziva accept funckija
@@ -197,11 +210,11 @@ int  main(void)
     HANDLE listenThread = CreateThread(NULL, 0, &listenThreadFunction, ltParams, 0, &(ltParams->threadId));
     
     EnterCriticalSection(&threadListCS);
-    printf("Thread ID(unutar main funkcije servera, ID listen thread-a): %d\n", ltParams->threadId);
+    printf("Thread ID(in the main function of server, ID of the listen thread): %d\n", ltParams->threadId);
     threadNode* tn = createNewThreadNode(listenThread, ltParams->threadId);
     insertAtHead(&head, tn);
     printList(head);
-    printf("Listen thread pokrenut, unesite 'e' za kraj\n");
+    printf("Listen thread started, enter 'e' to exit\n\n");
     LeaveCriticalSection(&threadListCS);
 
     char input = ' ';
@@ -227,30 +240,6 @@ int  main(void)
         freeMap(hashMap);
         return 0;
     }
-
-   
-    //promenjiva koja detektuje exit na mainu se prosledjuje lisent thread-u a on prosledjuje thradoivma za komunikaciju sa klijentima
-    //taj gethchar stoji u main threadu posle listen thread-a
-    //
-
-    // shutdown the connection since we're done
-    /*iResult = shutdown(acceptedSocket, SD_SEND);
-    if (iResult == SOCKET_ERROR)
-    {
-        printf("shutdown failed with error: %d\n", WSAGetLastError());
-        closesocket(acceptedSocket);
-        WSACleanup();
-        return 1;
-    }
-
-    // cleanup*/
-
-    
-    
-    //closesocket(acceptedSocket);
-
-  
-    //zatvaramo threadove
 
     return 0;
 }
@@ -289,22 +278,24 @@ DWORD WINAPI clientThreadFunction(LPVOID lpParam) {
     timeVal.tv_sec = 1;
     timeVal.tv_usec = 0;
 
-    //printf("Konektovan novi klijent\n");
 
     fileCount = htonl(fileCount);
-    //inicijalni send ka klijntu, da bi znao koliko ima fajlova
+
+    //initital send to client in order to inform client about how many files there are
     iResult = send(tParameters->acceptedSocket, (char*)&fileCount, (int)sizeof(long), 0);
 
     if (iResult == SOCKET_ERROR)
     {
+        EnterCriticalSection(&tParameters->printCS);
         printf("send failed with error: %d\n", WSAGetLastError());
+        LeaveCriticalSection(&(tParameters->printCS));
         closesocket(tParameters->acceptedSocket);
         WSACleanup();
 
     }
 
     EnterCriticalSection(&tParameters->printCS);
-    printf("Bytes sent to client: %ld\n\n", iResult);
+    printf("Bytes sent to client(informing client of how many files are stored on server): %ld\n\n", iResult);
     LeaveCriticalSection(&tParameters->printCS);
 
     long lastRequestedFileId = -1;
@@ -323,7 +314,9 @@ DWORD WINAPI clientThreadFunction(LPVOID lpParam) {
         }
         else if (result == SOCKET_ERROR) {
             // connection was closed gracefully
-            printf("Connection with client closed(bababab).\n");
+            EnterCriticalSection(&tParameters->printCS);
+            printf("Connection with client closed.\n");
+            LeaveCriticalSection(&(tParameters->printCS));
             closesocket(tParameters->acceptedSocket);
             break;
         }
@@ -343,7 +336,7 @@ DWORD WINAPI clientThreadFunction(LPVOID lpParam) {
             EnterCriticalSection(&(tParameters->printCS));
             printf("Client IPAddress: %s \nClient Port: %d\n", inet_ntoa(tParameters->clientAddr.sin_addr), ntohs(tParameters->clientAddr.sin_port));
             printf("Thread ID: %d\n", tParameters->threadId);
-            printf("Request from client:\nFile ID: %ld\nClient buff size: %ld\n", clientRequest->fileId, clientRequest->bufferSize);
+            printf("\n------------Request from client------------\nFile ID: %ld\nClient buff size: %ld\n-------------------------------------------\n\n", clientRequest->fileId, clientRequest->bufferSize);
             FD_CLR(tParameters->acceptedSocket, &readfds);
             LeaveCriticalSection(&(tParameters->printCS));
             
@@ -359,11 +352,6 @@ DWORD WINAPI clientThreadFunction(LPVOID lpParam) {
                 Tako sto prolazimo kroz listu i detektujemo poslednji clan liste, pamtimo pocetnu adresu tog dela fajla i velicinu
                 i onda citamo sa adrese + velicinu iz cistog fajla i taj deo fajla pakujemo za klijenta
 
-
-                takodje raditi provere ako klijent posalje fileID koji je veci od broja fajlova, onda posalji gresku klijentu
-                i reci koliki broj fajlova postoji. (ovo smo sredili, napravili smo logiku na klijentu gde mu ne da da posalje veci broj od broja fajlova
-                ili manji broj od 0)
-
                 Klijentu cemo slati stukturu podataka koja ce sadrzati 3 polja:
                 1) Niz delova fajlova
                 2) Niz filePartData
@@ -377,27 +365,12 @@ DWORD WINAPI clientThreadFunction(LPVOID lpParam) {
 
             */
 
-            /*
-            * 
-            * KAD BUDEMO UPISIVALI U HASH MAP, MORAMO DA ZA PORT KLIJENTA POZOVEMO NTOHS
-            * 
-             KAD BUDEMO PRAVILI SOCKADDR_IN, NE SMEMO DA ZABORAVIMO DA PRILIKOM POSTAVLJANJA PORTA, KAZEMO HTONS,
-             I TAKO NA KLIJENTU KAZEMO NTOHS
-             I TAKODJE DA SA ADRESOM URADIMO INET_ADDR
-             */
-
             EnterCriticalSection(&tParameters->hashMapCS);
             hashValue* fileData = hmSearch(tParameters->hashMap, (int)clientRequest->fileId);
-            //hashValue fileData = *fileDataPointer;
             LeaveCriticalSection(&tParameters->hashMapCS);
 
             fileDataResponse* response = (fileDataResponse*)malloc(sizeof(fileDataResponse));
             response->responseSize = sizeof(fileDataResponse);
-          
-            // 1) treba da dobavimo koliko je velicina fajla, tj. koliko fajl ima bajtova
-                //char** array = malloc(totalstrings * sizeof(char*));
-                //for (i = 0; i < totalstrings; ++i) {
-                //      array[i] = (char*)malloc(stringsize + 1);
             
             response->filePartData = NULL;
             response->partsCount = 0;
@@ -405,22 +378,23 @@ DWORD WINAPI clientThreadFunction(LPVOID lpParam) {
             int filePartOnClientCounter = 0;
             int summedFilePartSize = 0;
          
+            //there is no filePartData that means that nobody has downloaded this file yet
             if (fileData->filePartDataList == NULL) {
                 
                 response->filePartData = (filePartDataResponse*)malloc(1 * sizeof(filePartDataResponse));
                 response->filePartData->filePartAddress = (char*)malloc(sizeof(char) * (strlen(*(fileData->completeFile)) + 1));
                 response->responseSize += sizeof(filePartDataResponse) + strlen(*(fileData->completeFile)) + 1;
 
-                //ovo koristimo da pamtimo pocetnu adresu prvog dela fajla na koji naidjemo a da nije smesten ni na jednom klijentu
+                //save the start address of the first part of the file which is not stored at any client
                 if (saveAddress) {
                     filePartAddress = fileData->completeFile[0];
                     saveAddress = 0;
                 }
-                //ovde je prvi zahtev od bilo kog klijenta za taj fajl i mi tu treba da dodamo samo
-                //podatke o klijentu, a klijentu saljemo ceo fajl.
+            
+                //this is the very first request of all clients for this file, so we just add data about the client and just send the whole file to the client 
                 memcpy(response->filePartData->filePartAddress, fileData->completeFile[0], strlen(fileData->completeFile[0]) + 1);
                 response->filePartData->ipClientSocket.sin_port = htons(0); 
-                response->filePartData->ipClientSocket.sin_addr.S_un.S_addr = inet_addr("0.0.0.0");  /// da li se ovako postavlja adresa na 0 da li moramo da uradimo htnos
+                response->filePartData->ipClientSocket.sin_addr.S_un.S_addr = inet_addr("0.0.0.0"); 
                 response->filePartData->filePartSize = htonl(strlen(fileData->completeFile[0]) + 1);
                 response->filePartData->relativeAddress = htonl(0);
 
@@ -428,7 +402,7 @@ DWORD WINAPI clientThreadFunction(LPVOID lpParam) {
                
                 response->partsCount = 1;
 
-                //cuvamo ukupnu duzinu svih delova fajlova koji se ne nalaze ni na jednom klijnetu vec ih server salje
+                //saving the summed length of all parts of the file which are saved on server and not on any client
                 summedFilePartSize += (strlen(*(fileData->completeFile)) + 1);
                 
             }
@@ -441,7 +415,6 @@ DWORD WINAPI clientThreadFunction(LPVOID lpParam) {
                 */
                 int  i = 0;
                 filePartData* iterator = fileData->filePartDataList;
-                //filePartDataResponse* firstFilePartData = NULL;
                 //nama ce relativna adresa nekog elementa liste biti zbir velicina filePartSize svih prethodnih elemenata list
                 int relativeAddress = 0;
                 
@@ -458,14 +431,6 @@ DWORD WINAPI clientThreadFunction(LPVOID lpParam) {
                 while(iterator != NULL)
                 {
 
-                    //response->filePartData = (filePartDataResponse*)malloc(1 * sizeof(filePartDataResponse));
-
-                    //pocetnu adresu niza file part data stalno pomeramo, pa je potrebno da sacuvamo pocetnu adresu file part data
-                    //koja pokazuje na prvi clan niza
-                    /*if (i == 0) {
-                        firstFilePartData = response->filePartData;
-                    }*/
-
                     response->responseSize += sizeof(filePartDataResponse);
                     if (iterator->ipClientSocket.sin_addr.S_un.S_addr == inet_addr("0.0.0.0") && ntohs(iterator->ipClientSocket.sin_port) == 0) {
                         
@@ -478,10 +443,11 @@ DWORD WINAPI clientThreadFunction(LPVOID lpParam) {
                         response->filePartData[i].ipClientSocket = iterator->ipClientSocket;
                         response->filePartData[i].filePartSize = htonl(iterator->filePartSize);
                         response->filePartData[i].relativeAddress = htonl(relativeAddress);
+
                         relativeAddress += iterator->filePartSize;
+
                         response->filePartData[i].filePartAddress = (char*)malloc(iterator->filePartSize * sizeof(char));
                         memcpy(response->filePartData[i].filePartAddress, iterator->filePartAddress, iterator->filePartSize);
-                        //response->filePartData += iterator->filePartSize * sizeof(char);
                         response->responseSize += iterator->filePartSize * sizeof(char);
                         summedFilePartSize += iterator->filePartSize;
                        
@@ -501,11 +467,12 @@ DWORD WINAPI clientThreadFunction(LPVOID lpParam) {
                         response->filePartData[i].ipClientSocket = iterator->ipClientSocket;
                         response->filePartData[i].filePartSize = htonl(iterator->filePartSize);
                         response->filePartData[i].relativeAddress = htonl(relativeAddress);
+
                         relativeAddress += iterator->filePartSize;
+
                         response->filePartData[i].filePartAddress = (char*)malloc(sizeof(char*));
                         *((int*)response->filePartData[i].filePartAddress) = NULL;
                         filePartOnClientCounter++;
-                        //response->filePartData += sizeof(char*);
                         response->responseSize += sizeof(char*);
                     }
                     //response->filePartData += sizeof(filePartDataResponse);
@@ -537,12 +504,8 @@ DWORD WINAPI clientThreadFunction(LPVOID lpParam) {
                     }
 
                     int completeFileSize = strlen(*(fileData->completeFile));
-                    //int lastPartRelativeAddress = ntohl(response->filePartData[i].relativeAddress);
-                    //int lastPartSize = ntohl(response->filePartData[i].filePartSize);
                     int sizeOfTheLastPart = completeFileSize - relativeAddress;
                     
-                    //dodajemo jos jedan filePartData
-                    //i++;
                     response->filePartData[i].filePartAddress = (char*)malloc(sizeOfTheLastPart * sizeof(char));
                     response->responseSize += sizeOfTheLastPart * sizeof(char);
                     memcpy(response->filePartData[i].filePartAddress, lastPartAddress, sizeOfTheLastPart);
@@ -570,8 +533,10 @@ DWORD WINAPI clientThreadFunction(LPVOID lpParam) {
             fileDataResponseSerialized* serializedResponse = (fileDataResponseSerialized*)malloc(sizeof(fileDataResponseSerialized));
             serializedResponse->responseSize = response->responseSize;
             serializedResponse->partsCount = response->partsCount;
+
             int sizeOfSerializedFilePartData = ntohl(response->partsCount) * (sizeof(sockaddr_in) + 2 * sizeof(int)) +
                 (sizeof(char*) * filePartOnClientCounter) + summedFilePartSize * sizeof(char);
+
             serializedResponse->filePartData = (char*)malloc(sizeOfSerializedFilePartData * sizeof(char));
             char* savedAddress = NULL;
             
@@ -590,6 +555,7 @@ DWORD WINAPI clientThreadFunction(LPVOID lpParam) {
                 memcpy(serializedResponse->filePartData, &(response->filePartData[i].relativeAddress), sizeof(int));
                 serializedResponse->filePartData += sizeof(int);
 
+                //filePartAddress ima vrednost NULL kada deo fajla nije ni na jednom klijentu
                 if(*(response->filePartData[i].filePartAddress) != NULL)
                 {
                     memcpy(serializedResponse->filePartData, response->filePartData[i].filePartAddress, sizeof(char)* ntohl(response->filePartData[i].filePartSize));
@@ -624,7 +590,9 @@ DWORD WINAPI clientThreadFunction(LPVOID lpParam) {
                 iResult = send(tParameters->acceptedSocket, (char*)valueResponseSerialized + sentBytes, finalResponseSize, 0);
                 if (iResult == SOCKET_ERROR)
                 {
+                    EnterCriticalSection(&(tParameters->printCS));
                     printf("send failed with error: %d\n", WSAGetLastError());
+                    LeaveCriticalSection(&(tParameters->printCS));
                     closesocket(tParameters->acceptedSocket);
                     WSACleanup();
                     break;
@@ -679,14 +647,18 @@ DWORD WINAPI clientThreadFunction(LPVOID lpParam) {
         {
             // connection was closed gracefully
             //da li je ovde klijent gracefully zatvorio i kada se ulazi u ovaj deo koda
+            EnterCriticalSection(&(tParameters->printCS));
             printf("Connection with client closed.\n");
+            LeaveCriticalSection(&(tParameters->printCS));
             closesocket(tParameters->acceptedSocket);
             break;
         }
         else
         {
             // there was an error during recv
+            EnterCriticalSection(&(tParameters->printCS));
             printf("recv failed with error: %d\n", WSAGetLastError());
+            LeaveCriticalSection(&(tParameters->printCS));
             closesocket(tParameters->acceptedSocket);
             break;
         }
@@ -703,7 +675,6 @@ DWORD WINAPI clientThreadFunction(LPVOID lpParam) {
     if (lastRequestedFileId != -1) {
         EnterCriticalSection(&tParameters->hashMapCS);
         hashValue* fileDataPointer = hmSearch(tParameters->hashMap, (int)lastRequestedFileId);
-        //hashValue fileData = *fileDataPointer;
         deleteFilePartDataLogical(&(fileDataPointer->filePartDataList), tParameters->clientAddr);
         LeaveCriticalSection(&tParameters->hashMapCS);
     }
@@ -754,7 +725,9 @@ DWORD WINAPI listenThreadFunction(LPVOID lpParam) {
         }
         else if (result == SOCKET_ERROR) {
             // connection was closed gracefully
+            EnterCriticalSection(&(ltParams->printCS));
             printf("Connection with client closed.\n");
+            LeaveCriticalSection(&(ltParams->printCS));
             closesocket(ltParams->acceptedSocket);
             break;
         }
@@ -771,17 +744,22 @@ DWORD WINAPI listenThreadFunction(LPVOID lpParam) {
 
             if (ltParams->acceptedSocket == INVALID_SOCKET)
             {
+                EnterCriticalSection(&(ltParams->printCS));
                 printf("accept failed with error: %d\n", WSAGetLastError());
+                LeaveCriticalSection(&(ltParams->printCS));
                 closesocket(ltParams->listenSocket);
                 WSACleanup();
                 break;
             }
 
+            //sending to client his socket data
             int iResult = send(ltParams->acceptedSocket, (char*)&clientAddr, sizeof(sockaddr_in), 0);
 
             if (iResult == SOCKET_ERROR)
             {
+                EnterCriticalSection(&(ltParams->printCS));
                 printf("send failed with error: %d\n", WSAGetLastError());
+                LeaveCriticalSection(&(ltParams->printCS));
                 closesocket(ltParams->acceptedSocket);
                 WSACleanup();
                 break;
@@ -801,15 +779,14 @@ DWORD WINAPI listenThreadFunction(LPVOID lpParam) {
             HANDLE clientCommunicaitonThread = CreateThread(NULL, 0, &clientThreadFunction, tParameters, 0, &(tParameters->threadId));
 
             EnterCriticalSection(&(ltParams->threadListCS));
-            printf("Thread ID(unutar listen thread-a funkcije servera, id thread-a za komunikaciju sa klijentom): %d\n", tParameters->threadId);
+            printf("Thread ID(inside the listen thread of server function, id of the thread for communication with client): %d\n", tParameters->threadId);
             threadNode* tn = createNewThreadNode(clientCommunicaitonThread, tParameters->threadId);
             insertAtHead(ltParams->head, tn);
             printList(*(ltParams->head));
             LeaveCriticalSection(&(ltParams->threadListCS));
         }
     } while (!*(ltParams->exitFlag));
-     
-    //Zatvaranje Handla
+
     EnterCriticalSection(&(ltParams->threadListCS));
     threadNode* nodeToClose = findthreadNodeByThreadId(*(ltParams->head), ltParams->threadId);
     LeaveCriticalSection(&(ltParams->threadListCS));
@@ -819,8 +796,6 @@ DWORD WINAPI listenThreadFunction(LPVOID lpParam) {
     //brisanje thread node iz liste
     EnterCriticalSection(&(ltParams->threadListCS));
     deletethreadNode(ltParams->head, ltParams->threadId);
-    //printf("Ispis u listen thread-u\n");
-    //printList(*(ltParams->head));
     LeaveCriticalSection(&(ltParams->threadListCS));
 
     return 0;

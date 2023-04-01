@@ -14,22 +14,9 @@ typedef struct filePartDataNode {
 
 filePartDataNode* createNewFilePartDataNode(int relativeAddress, int filePartSize);
 
-//brisanje prvog elementa liste
-//prosledi se head, 
-//filePartDataNode* deleteFirstFilePartDataNode(filePartDataNode* head);
-
-//ovo je brisanje preko reference
-//void deleteFirstFilePartDataNodeBYReference(filePartDataNode** head);
 
 filePartDataNode* insertAtHead(filePartDataNode** head, filePartDataNode* filePartDataNodeToInsert);
 
-//filePartDataNode* insertAtEnd(filePartDataNode** head, filePartDataNode* filePartDataNodeToInsert);
-
-//filePartDataNode* findthreadNodeByThreadId(filePartDataNode* head, int relativeAddress);
-
-//void printFoundFilePartDataNode(filePartDataNode* head, int relativeAddress);
-
-//void deleteLastFilePartDataNode(filePartDataNode* head);
 
 void deleteFilePartDataNode(struct filePartDataNode** head, int relativeAddress);
 
