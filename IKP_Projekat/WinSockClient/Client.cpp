@@ -521,14 +521,14 @@ DWORD WINAPI serverThreadFunction(LPVOID lpParam) {
         scanf("%ld", &bufferSize);
         requestMessage.bufferSize = htonl(bufferSize);
 
-        //ovo zauzimanje memorije za clientBuff bi mozda mogli da stavimo u 685 liniju u sustini nakon sto dobijemo odgovor od servera u koji cemo implemetirati da umesto response size salje
+        //ovo zauzimanje memorije za clientBuff bi mozda mogli da stavimo u 685 liniju u sustini nakon sto dobijemo odgovor od servera u koji cemo implemetirati da pored svega ostalog salje i
         //broj bajtova koji nisu ni na jendom klijentu da bi ako tipa mi trazimo 5 a on u stvari ima samo 2, mi stavili bufferSize na 2 a ne 5, a ako je 0:
         //1)onda samo prosto nista ne stavimo u bafer
-        //2) ili samo napravimo da uzme od prvog klijenta da bude sad taj deo na njemu ali to bi bila teska jebacina i trebalo bi da se uvede fiksna velicina buffer size na svim klijentima
+        /*
         EnterCriticalSection(&stParams->bufferCS);
         *(stParams->clientBuffer) = (char*)malloc(sizeof(char) * bufferSize);
         LeaveCriticalSection(&stParams->bufferCS);
-
+        */
 
         // send koji salje zahtev serveru gde se navodi idFile i velicina dela fajla koji klijent cuva kod sebe
         iResult = send(stParams->serverConnectSocket, (char*)&requestMessage, (int)sizeof(request), 0);
@@ -581,7 +581,8 @@ DWORD WINAPI serverThreadFunction(LPVOID lpParam) {
             if (iResult > 0) {
                 if (responseSizeRecieved == 0) {
                     responseSize = *((short*)recvBuff);
-                    recvBuff += sizeof(short);        
+                    recvBuff += sizeof(short); 
+                    responseSizeRecieved = 1;
                 }
 
                 FD_CLR(stParams->serverConnectSocket, &readfds);
@@ -613,12 +614,13 @@ DWORD WINAPI serverThreadFunction(LPVOID lpParam) {
         if (responseSize == recievedBytes) {
 
             serverResponse->responseSize = responseSize;
- 
+            serverResponse->allowedBufferSize = *((int*)recvBuff);
+            recvBuff += sizeof(int);
             serverResponse->partsCount = *((long*)recvBuff);
             recvBuff += sizeof(long);
 
             EnterCriticalSection(&stParams->printCS);
-            printf("\nResponse size: %d", serverResponse->responseSize);
+            printf("\nAllowed buffer size: %d", serverResponse->allowedBufferSize);
             printf("\nParts count: %d\n", serverResponse->partsCount);
             LeaveCriticalSection(&stParams->printCS);
             filePartDataResponse* savedAddress = NULL;
@@ -677,6 +679,22 @@ DWORD WINAPI serverThreadFunction(LPVOID lpParam) {
             serverResponse->filePartData = savedAddress;
 
         }
+        //zauzimanje memorijskog prostora za klijent buffer i to velicinu koju je server dozvolio
+        int noBufferFlag = 0;
+
+        if (serverResponse->allowedBufferSize > 0)
+        {
+            EnterCriticalSection(&stParams->bufferCS);
+            *(stParams->clientBuffer) = (char*)malloc(sizeof(char) * serverResponse->allowedBufferSize);
+            LeaveCriticalSection(&stParams->bufferCS);
+
+            bufferSize = serverResponse->allowedBufferSize;
+        }
+        else
+        {
+            noBufferFlag = 1;
+        }
+
         //u print buffer pisemo celokupnu poruku
         char* printBuffer = NULL;
         int clientBufferFull = 0;
@@ -725,7 +743,7 @@ DWORD WINAPI serverThreadFunction(LPVOID lpParam) {
                 serverResponse->filePartData[i].ipClientSocket.sin_addr.S_un.S_addr == inet_addr("0.0.0.0")) {
 
                 //in this section part of the requested file is stored in client buffer
-                if (!clientBufferFull) {
+                if (!clientBufferFull && !noBufferFlag) {
                     //check if the part of the file is bigger or equal in comparison with the client buffer
                     if (serverResponse->filePartData[i].filePartSize - (bufferSize - numberOfWrittenBytes) >= 0) {
                         EnterCriticalSection(&stParams->bufferCS);

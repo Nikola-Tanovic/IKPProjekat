@@ -298,6 +298,7 @@ DWORD WINAPI clientThreadFunction(LPVOID lpParam) {
     printf("Bytes sent to client(informing client of how many files are stored on server): %ld\n\n", iResult);
     LeaveCriticalSection(&tParameters->printCS);
 
+    //UBACIM UMESTO JEDNOG DA SE CUVA LISTA ID-OVA
     long lastRequestedFileId = -1;
 
     do
@@ -568,13 +569,22 @@ DWORD WINAPI clientThreadFunction(LPVOID lpParam) {
             }
 
             serializedResponse->filePartData = savedAddress;
-            short finalResponseSize = sizeof(char) * (sizeOfSerializedFilePartData + sizeof(long) + sizeof(short));
+                                                                                                    //ovde sam stavio int umesto short
+            short finalResponseSize = sizeof(char) * (sizeOfSerializedFilePartData + sizeof(long) + sizeof(int) + sizeof(short));
             long finalPartsCount = ntohl(serializedResponse->partsCount);
             char* valueResponseSerialized = (char*)malloc(sizeof(char) * finalResponseSize);
             savedAddress = valueResponseSerialized;
 
+            //izmenio sam tako da umesto final response size ovde stavim summedFilePartSize da bih klijentu poslao koliko je bajtova jos smesteno na serveru a ne na drugim klijentima
+            int allowedBufferSize = (int)clientRequest->bufferSize;
+            if (summedFilePartSize < (int)clientRequest->bufferSize)
+            {
+                allowedBufferSize = summedFilePartSize - 1;
+            }
             memcpy(valueResponseSerialized, &finalResponseSize, sizeof(short));
             valueResponseSerialized += sizeof(short);
+            memcpy(valueResponseSerialized, &allowedBufferSize, sizeof(int));
+            valueResponseSerialized += sizeof(int);
             memcpy(valueResponseSerialized, &finalPartsCount, sizeof(long));
             valueResponseSerialized += sizeof(long);
             memcpy(valueResponseSerialized, serializedResponse->filePartData, sizeOfSerializedFilePartData);
@@ -600,14 +610,15 @@ DWORD WINAPI clientThreadFunction(LPVOID lpParam) {
                 sentBytes += iResult;
             } while (finalResponseSize - sentBytes > 0);
            
+
             //ako je ceo odgovor uspesno poslat radimo upis u hes mapu
-            if (sentBytes - finalResponseSize == 0) {
+            if (sentBytes - finalResponseSize == 0 && allowedBufferSize > 0) {
                 //upis u hes mapu
                 if (fileData->filePartDataList == NULL) {
                     EnterCriticalSection(&(tParameters->hashMapCS));
                     //fileData.filePartDataList = (filePartData*)malloc(sizeof(filePartData));
                     insertAtEnd(&(fileData->filePartDataList), createNewFilePartData(
-                        clientRequest->fileId, tParameters->clientAddr, filePartAddress, clientRequest->bufferSize));
+                        clientRequest->fileId, tParameters->clientAddr, filePartAddress, allowedBufferSize));
                     LeaveCriticalSection(&(tParameters->hashMapCS));
                 }
                 else {
@@ -615,12 +626,13 @@ DWORD WINAPI clientThreadFunction(LPVOID lpParam) {
                     int updateFailed = updateFilePartData(&(fileData->filePartDataList), tParameters->clientAddr);
                     if (updateFailed) {
                         insertAtEnd(&(fileData->filePartDataList), createNewFilePartData(
-                            clientRequest->fileId, tParameters->clientAddr, filePartAddress, clientRequest->bufferSize));
+                            clientRequest->fileId, tParameters->clientAddr, filePartAddress, allowedBufferSize));
                     }
                     LeaveCriticalSection(&(tParameters->hashMapCS));
                 }
 
                 //korisnik je skinuo sad neki novi fajl pa moramo da ga izbrisemo iz evidencije za prethodni fajl
+                //AKO BUDEMO IMPLEMENTIRALI DA KLIJENT CUVA VISE DELOVA RAZLICITIH FAJLOVA ONDA CEMO VEROVATNO OVO IZBACITI
                 if (lastRequestedFileId != -1) {
                     EnterCriticalSection(&tParameters->hashMapCS);
                     hashValue* fileDataPointer = hmSearch(tParameters->hashMap, (int)lastRequestedFileId);
@@ -630,7 +642,12 @@ DWORD WINAPI clientThreadFunction(LPVOID lpParam) {
                 }     
             }
             
-            lastRequestedFileId = clientRequest->fileId;
+            //OVDE STAVIM DODAVANJE U LISTU ID-OVA
+            if (allowedBufferSize > 0)
+            {
+                lastRequestedFileId = clientRequest->fileId;
+            }
+
             int partCount = ntohs(response->partsCount);
             //ntohs
             for (int i = 0; i < partCount; i++)
@@ -669,9 +686,13 @@ DWORD WINAPI clientThreadFunction(LPVOID lpParam) {
            prvo pretrazimo hash mapu po file id i tako nadjemo taj node u hash mapi. Dobijemo pokazivac na strukturu
            koja ima pokazivac na ceo fajl i listu filePartData. Prolazimo kroz tu listu i trazimo filePartData koji ima isti
            sockaddr kao i klijent sa kojim komuniciramo na ovom threadu. Tom filePartData stavimo 0 na adresu i port socketa(logicko brisanje)
-
     */
 
+    /*
+        Ako budem implementirao da klijent moze da cuva vise delova razlicitih fajlova, mogao bih na serveru da na svaki novi zahtev dodajem u listu intova i onda ovde da prolazim kroz nju
+        i redom brisem za svaki fajl podatke o delu tog fajla na tom klijentu
+        AKO LISTA ID-OVA NIJE PRAZNA PROLAZIM KROZ NJU I REDOM BRISEM IZ HES MAPE
+    */
     if (lastRequestedFileId != -1) {
         EnterCriticalSection(&tParameters->hashMapCS);
         hashValue* fileDataPointer = hmSearch(tParameters->hashMap, (int)lastRequestedFileId);

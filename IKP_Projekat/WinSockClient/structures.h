@@ -33,12 +33,14 @@ typedef struct filePartDataResponse {
 
 typedef struct fileDataResponse {
 	short responseSize;
+	int allowedBufferSize;
 	long partsCount;
 	filePartDataResponse* filePartData; //niz fajlPartData
 }fileDataResponse;
 
 typedef struct fileDataResponseSerialized {
 	short responseSize;
+	int allowedBufferSize;
 	long partsCount;
 	char* filePartData;
 }fileDataResponseSerialized;
